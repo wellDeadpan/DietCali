@@ -1,0 +1,11 @@
+1. read in data
+2. ID correction
+4. check var names and added var labels (pre=process)
+5. derive nutrient density
+6. convert to servings per day (FFQ config)
+7. food group 
+8. nutrient derivation for whole grain
+9. servings per day to gram per day?
+10. derived required nurtrients (need nutrient list)
+11. merge FFQ and nutrients with new var added
+12. to calculate different eating indexes: index specific algorithm

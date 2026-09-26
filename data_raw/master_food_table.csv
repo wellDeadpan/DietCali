@@ -1,0 +1,158 @@
+﻿food_group,food_item,portion
+Dairy Foods,Skim milk,8 oz glass
+Dairy Foods,1 or 2% milk,8 oz glass
+Dairy Foods,Whole milk,8 oz glass
+Dairy Foods,Almond milk,8 oz glass
+Dairy Foods,Soy milk,8 oz glass
+Dairy Foods,Other plant-based milk,8 oz glass
+Dairy Foods,"Cream (coffee/sour, exclude fat free)",1 Tbsp
+Dairy Foods,Non-dairy coffee whitener (exclude fat free),1 Tbsp
+Dairy Foods,Frozen yogurt / sherbet / low-fat ice cream,1 cup
+Dairy Foods,Regular ice cream,1 cup
+Dairy Foods,Pure butter or ghee (spread),nan
+Dairy Foods,Margarine (spread),nan
+Dairy Foods,Butter with added oil (spread),nan
+Dairy Foods,Yogurt - Plain,4–6 oz
+Dairy Foods,Yogurt - Artificially sweetened,4–6 oz
+Dairy Foods,Yogurt - Sweetened,4–6 oz
+Dairy Foods,Cottage or ricotta cheese,1/2 cup
+Dairy Foods,Cream cheese,1 oz
+Dairy Foods,"Other cheese (American, cheddar, etc.)",1 slice or 1 oz
+Fruits,Raisins or grapes,1 oz or 1/2 cup
+Fruits,Prunes or dried plums (canned or dried),1/2 cup or 1/4 cup dried
+Fruits,Bananas,1 or 1/2
+Fruits,Cantaloupe,1/4 melon
+Fruits,Avocado,1/2 fruit or 1/2 cup
+Fruits,Fresh apples or pears,1
+Fruits,Apple juice or cider,Small glass
+Fruits,Tangerines / clementines / mandarin oranges,1
+Fruits,Oranges,1
+Fruits,Orange juice (calcium or vitamin D fortified),Small glass
+Fruits,"Orange juice (regular, not fortified)",Small glass
+Fruits,Grapefruit or grapefruit juice,1/2 or small glass
+Fruits,"Other fruit juices (cranberry, grape)",Small glass
+Fruits,"Strawberries (fresh, frozen, or canned)",1/2 cup
+Fruits,"Blueberries (fresh, frozen, or canned)",1/2 cup
+Fruits,Peaches or plums (fresh or canned),1 fresh or 1/2 cup canned
+Fruits,Apricots,1 fresh or 1/2 cup canned or 5 dried
+Vegetables,Tomatoes,2 slices
+Vegetables,Tomato juice or V-8 juice,Small glass
+Vegetables,Tomato sauce,1/2 cup
+Vegetables,Salsa / picante / taco sauce,1/4 cup
+Vegetables,String beans,1/2 cup
+Vegetables,Hummus / garbanzo / chickpeas,1/4–1/2 cup
+Vegetables,Beans / lentils / baked / chili,1/2 cup or soup
+Vegetables,Soy burger / tofu / soy protein,1 patty
+Vegetables,Other plant-based burger,1 patty
+Vegetables,Peas or lima beans,1/2 cup
+Vegetables,Broccoli,1/2 cup
+Vegetables,Cauliflower,1/2 cup
+Vegetables,Cabbage or coleslaw,1/2 cup
+Vegetables,Brussels sprouts,1/2 cup
+Vegetables,Carrots (raw),1/2 cup or 2–4 sticks
+Vegetables,Carrots (cooked) or carrot juice,1/2 cup or 2–3 oz
+Vegetables,Corn,1 ear or 1/2 cup
+Vegetables,Mixed or stir fry vegetables,1/2 cup or soup
+Vegetables,Yams or sweet potatoes,1/2 cup
+Vegetables,Dark orange winter squash,1/2 cup
+Vegetables,Eggplant / zucchini / summer squash,1/2 cup
+Vegetables,Kale / arugula / mustard greens,1/2 cup
+Vegetables,Spinach (cooked),1/2 cup
+Vegetables,Spinach (raw / salad),1 cup
+Vegetables,Iceberg or head lettuce,1 serving
+Vegetables,Romaine or leaf lettuce,1 serving
+Vegetables,Peppers (green / yellow / red),1/4 small
+Vegetables,Onions as garnish or salad,1 slice
+Vegetables,Onions cooked or rings,1/2 cup or soup
+"Eggs, Meat, Etc.",Eggs – Omega‑3 fortified including yolk,1 egg
+"Eggs, Meat, Etc.",Eggs – Regular eggs including yolk,1 egg
+"Eggs, Meat, Etc.",Beef hot dogs,1
+"Eggs, Meat, Etc.",Chicken or turkey hot dogs / sausage,1 or bacon (2 slices)
+"Eggs, Meat, Etc.",Chicken/turkey sandwich or frozen dinner,1
+"Eggs, Meat, Etc.",Other chicken or turkey with skin (incl. ground),3 oz
+"Eggs, Meat, Etc.",Other chicken or turkey without skin,3 oz
+"Eggs, Meat, Etc.",Bacon (exclude turkey bacon),2 slices
+"Meat, Fish",Salami / bologna / other processed meat sandwiches,1 sandwich
+"Meat, Fish",Sausage or kielbasa (pork or beef),2 oz or 2 links
+"Meat, Fish",Hamburger – Lean or extra lean,1 patty
+"Meat, Fish",Hamburger – Regular,1 patty
+"Meat, Fish",Beef / pork / lamb as sandwich or mixed dish,1 serving
+"Meat, Fish",Pork as a main dish (ham or chops),4–6 oz
+"Meat, Fish",Beef or lamb as a main dish (steak / roast),4–6 oz
+"Meat, Fish",Canned tuna fish,3–4 oz
+"Meat, Fish",Breaded fish / fish sticks (store bought),1 serving
+"Meat, Fish","Shellfish (shrimp, crab, scallops, clams) as main dish",1 serving
+"Meat, Fish","Dark meat fish (tuna steak, mackerel, salmon, sardines, bluefish, swordfish)",3–5 oz
+"Meat, Fish","Other fish (cod, haddock, halibut)",3–5 oz
+"Breads, Cereals, Starches",Cold breakfast cereal,1 serving
+"Breads, Cereals, Starches",Cooked oatmeal / cooked oat bran (including instant),1 cup
+"Breads, Cereals, Starches",Other cooked breakfast cereal (including grits),1 cup
+"Breads, Cereals, Starches",Bread / Pita – White / wheat / oatmeal (not whole grain),1 slice
+"Breads, Cereals, Starches",Bread / Pita – Rye / pumpernickel,1 slice
+"Breads, Cereals, Starches",Bread / Pita – Whole wheat / whole grain oat / whole multigrain,1 slice
+"Breads, Cereals, Starches",Crackers – Whole grain / whole wheat,6
+"Breads, Cereals, Starches",Crackers – Other crackers,6
+"Breads, Cereals, Starches",Bagels / English muffins / rolls,1
+"Breads, Cereals, Starches",Muffins or biscuits,1
+"Breads, Cereals, Starches",Pancakes or waffles,2 small pieces
+"Breads, Cereals, Starches",Brown rice,1 cup
+"Breads, Cereals, Starches",White rice,1 cup
+"Breads, Cereals, Starches","Whole grain pasta (e.g., spaghetti, macaroni)",1 cup
+"Breads, Cereals, Starches","Other pasta (white grain, egg noodles, macaroni)",1 cup
+"Breads, Cereals, Starches","Other whole grains (quinoa, barley, spelt, etc.)",1 cup
+"Breads, Cereals, Starches",Tortillas / corn or flour / burritos / quesadillas,2
+"Breads, Cereals, Starches",French fries (exclude sweet potato fries),6 oz or 1 serving
+"Breads, Cereals, Starches","Potatoes, baked or boiled",1 or 1 cup mashed
+"Breads, Cereals, Starches",Potato chips or corn/tortilla chips,Small bag or 1 oz
+"Breads, Cereals, Starches",Pizza,2 slices
+Beverages,Low-calorie carbonated beverage with caffeine,1 glass / bottle / can
+Beverages,Other low-calorie carbonated beverage without caffeine,1 glass / bottle / can
+Beverages,Carbonated beverage with caffeine & sugar,1 glass / bottle / can
+Beverages,Other carbonated beverage with sugar,1 glass / bottle / can
+Beverages,"Other sugar-sweetened beverages (juice drinks, lemonade, sports drinks, sweetened tea)",1 glass / bottle
+Beverages,"Beer (regular, light, or hard cider)",1 glass / bottle / can
+Beverages,Red wine,5 oz glass
+Beverages,White wine,5 oz glass
+Beverages,Liquor / spirits / hard seltzer (mixed drinks),1 drink or shot
+Beverages,Plain water (still / sparkling / tap),8 oz cup
+Beverages,Decaffeinated tea (exclude herbal),8 oz cup
+Beverages,Tea with caffeine (including green tea),8 oz cup
+Beverages,Decaffeinated coffee,8 oz cup
+Beverages,Coffee with caffeine,8 oz cup
+Beverages,"Dairy coffee drink (hot/cold, e.g., cappuccino)",12 oz
+"Sweets, Baked Goods, Miscellaneous",Milk chocolate bar or pack,1 bar or pack
+"Sweets, Baked Goods, Miscellaneous",Dark chocolate bar,1 bar
+"Sweets, Baked Goods, Miscellaneous","Candy bars (Snickers, Milky Way, Reese's)",1
+"Sweets, Baked Goods, Miscellaneous",Candy without chocolate,1 oz
+"Sweets, Baked Goods, Miscellaneous",Cookies,1
+"Sweets, Baked Goods, Miscellaneous",Brownies,1
+"Sweets, Baked Goods, Miscellaneous",Doughnuts,1
+"Sweets, Baked Goods, Miscellaneous",Cake (homemade or ready-made),1 slice
+"Sweets, Baked Goods, Miscellaneous",Pie (homemade or ready-made),1 slice
+"Sweets, Baked Goods, Miscellaneous",Jams / jellies / preserves / syrup / honey,1 Tbsp
+"Sweets, Baked Goods, Miscellaneous",Peanut butter or other nut butter,1 Tbsp
+"Sweets, Baked Goods, Miscellaneous",Popcorn (regular / light / fat free),2–3 cups
+"Sweets, Baked Goods, Miscellaneous",Sweet roll / coffee cake / pastry,1
+"Sweets, Baked Goods, Miscellaneous","Snack bars (Kind, Kashi, granola)",1
+"Sweets, Baked Goods, Miscellaneous","Energy / high protein bars (Clif, Quest, RXbar)",1
+"Sweets, Baked Goods, Miscellaneous",Diet nutrition drinks (SlimFast),1
+"Sweets, Baked Goods, Miscellaneous",Ensure / Boost / meal replacement drinks,1
+"Sweets, Baked Goods, Miscellaneous",Pretzels,Small bag or serving
+"Sweets, Baked Goods, Miscellaneous",Peanuts,Small packet or 1 oz
+"Sweets, Baked Goods, Miscellaneous",Walnuts,1 oz
+"Sweets, Baked Goods, Miscellaneous",Other nuts,Small packet or 1 oz
+"Sweets, Baked Goods, Miscellaneous",Dried cranberries,1/4 cup
+"Sweets, Baked Goods, Miscellaneous",Mixed dried fruit,1/4 cup
+"Sweets, Baked Goods, Miscellaneous",Oat bran / wheat bran added to food,1 Tbsp
+"Sweets, Baked Goods, Miscellaneous",Chowder or cream soup,1 cup
+"Sweets, Baked Goods, Miscellaneous",Tomato soup,1 cup
+"Sweets, Baked Goods, Miscellaneous",Ketchup or chili sauce,1 Tbsp
+"Sweets, Baked Goods, Miscellaneous",Flaxseed,1 Tbsp
+"Sweets, Baked Goods, Miscellaneous","Seeds (pumpkin, sunflower, etc.)",1/4 cup
+"Sweets, Baked Goods, Miscellaneous",Garlic (fresh or powdered),1 clove or 4 shakes
+"Sweets, Baked Goods, Miscellaneous",Olives (any type),3
+"Sweets, Baked Goods, Miscellaneous",Olive oil added to food or bread,1 Tbsp
+"Sweets, Baked Goods, Miscellaneous",Low-fat or olive oil mayonnaise,1 Tbsp
+"Sweets, Baked Goods, Miscellaneous",Regular mayonnaise,1 Tbsp
+"Sweets, Baked Goods, Miscellaneous",Salad dressing,1–2 Tbsp
+"Sweets, Baked Goods, Miscellaneous",Artificial sweeteners,1 packet

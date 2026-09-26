@@ -1,0 +1,18 @@
+energy_kcal_per_g:
+  protein: 4
+  fat: 9
+  carb: 4
+
+hei2015_thresholds:
+  total_fruit:
+    max_score: 5
+    min_density: 0
+    max_density: 0.8
+  added_sugar:
+    max_score: 10
+    full_point_pct: 6.5
+    zero_point_pct: 26
+  sat_fat:
+    max_score: 10
+    full_point_pct: 8
+    zero_point_pct: 16

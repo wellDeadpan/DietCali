@@ -1,0 +1,10 @@
+api_key: "aAZOA1h6tUEF4SUMUoSX9dbgAFd5HVXVXi2hZwSg"
+base_url: "https://api.nal.usda.gov/fdc"
+version: "v1"
+endpoints:
+  search: "foods/search"
+  food: "food"
+  foods: "foods"
+default_dataTypes: ["Foundation", "SR Legacy", "Branded", "Survey (FNDDS)", "Experimental "]
+default_pageSize: 50
+default_numberOfResultsPerPage: 50
