@@ -11,3 +11,6 @@ ffq_raw_dir: "I:/DietCali"
 
 # NECS replication data (DQ files)
 necs_data_dir: "../data"
+
+# FoodData Central "Survey (FNDDS)" CSV download (unzipped folder); used by scripts/fndds_match.py
+fndds_dir: "data_raw/fndds/FoodData_Central_survey_food_csv_2024-10-31"   # edit to the folder you unzipped

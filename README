@@ -18,6 +18,17 @@ food_items.csv is the interface: any input source that produces the same columns
 Rebuild it after changing the questionnaire or var_map (hand-edited columns are kept):
     python3 scripts/build_food_items.py datasets/perls9
 
+FNDDS matching (local, replaces the USDA API search)
+----------------------------------------------------
+1. Download the FoodData Central "Survey (FNDDS)" CSV zip, unzip it under data_raw/fndds/
+   and set `fndds_dir` in config/paths.yml to that folder.
+2. python3 scripts/fndds_match.py            # BM25 + FAISS recall, RRF fusion
+   python3 scripts/fndds_match.py --rerank   # + cross-encoder rerank
+   python3 scripts/fndds_match.py --no-dense # BM25 only
+3. Review datasets/<name>/fndds_match/matches.csv (one FNDDS food per search term);
+   put corrections in manual_fdc_id / review_note (kept on re-runs).
+   candidates.csv holds the top-5 candidates per search term.
+
 Pipeline steps
 --------------
 1. read in data
