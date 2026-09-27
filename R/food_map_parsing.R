@@ -199,9 +199,14 @@ suppressPackageStartupMessages({
 
 # =========================================================
 # 主函数：每个 var 只保留 1 条
-# - 先 filter(rank==1)
-# - 核心词(head)必须出现在候选description里
-# - similarity最高者胜出；并列用score打破
+# - 考虑每个 var 下所有候选（默认前 max_rank 名），不只看 rank==1
+# - 优先选 description 里含核心词(head)的候选
+# - 在这些候选里按综合分排序：
+#     match_score = w_sim * Jaccard(FFQ描述, 候选描述) + w_search * 搜索分
+#   搜索分用 usda_search_candidates 算出的 final；没有 final 时用组内归一化的 API score
+# - 没有任何候选含核心词时，退回到所有候选里综合分最高的，并标记 needs_review
+# - 查询失败/无结果的 var 也保留一行（fdcId 为 NA），不会被悄悄丢掉
+# 输出额外列：match_head_ok, match_sim, match_score, n_candidates, needs_review
 # =========================================================
 dedupe_keep_one_per_var <- function(df,
                                     var_col = "var",
@@ -210,41 +215,56 @@ dedupe_keep_one_per_var <- function(df,
                                     query_desc_col = "descriptions",
                                     cand_desc_col = "description",
                                     score_col = "score",
+                                    final_col = "final",
                                     stopwords = .default_stopwords,
-                                    w_querydesc = 1.0) {
+                                    max_rank = Inf,
+                                    w_sim = 1.0,
+                                    w_search = 0.5) {
   
   stopifnot(all(c(var_col, rank_col, entity_col, query_desc_col, cand_desc_col) %in% names(df)))
   
+  .rescale01 <- function(s) {
+    if (all(is.na(s))) return(rep(0, length(s)))
+    rng <- range(s, na.rm = TRUE)
+    if (diff(rng) == 0) return(ifelse(is.na(s), 0, 0.5))
+    out <- (s - rng[1]) / diff(rng)
+    ifelse(is.na(out), 0, out)
+  }
+  
+  has_final <- final_col %in% names(df)
+  has_score <- score_col %in% names(df)
+  
   x <- df %>%
-    filter(.data[[rank_col]] == 1) %>%
+    mutate(
+      .has_cand = !is.na(.data[[rank_col]]) & !is.na(.data[[cand_desc_col]]),
+      .in_pool = .has_cand & .data[[rank_col]] <= max_rank
+    ) %>%
+    group_by(.data[[var_col]]) %>%
+    # 没有任何有效候选的 var：保留第一行作为占位
+    filter(.in_pool | (!any(.in_pool) & row_number() == 1)) %>%
+    ungroup() %>%
     mutate(
       .head = map_chr(.data[[entity_col]], ~ .get_head(.x, stopwords)),
       .q_tokens = map(.data[[query_desc_col]], ~ .tokenize(.x, stopwords)),
       .cand_tokens = map(.data[[cand_desc_col]], ~ .tokenize(.x, stopwords)),
       # 核心词一致：候选必须含 head
-      .head_ok = map2_lgl(.head, .cand_tokens, ~ !is.na(.x) && .x %in% .y),
-      # similarity（这里用 query descriptions vs candidate 的 Jaccard；你也可以换更复杂）
-      .sim = map2_dbl(.q_tokens, .cand_tokens, .jaccard) * w_querydesc,
-      # 不满足核心词一致的直接淘汰
-      .sim = ifelse(.head_ok, .sim, -Inf)
-    )
-  
-  # 如果一个 var 下所有候选都 head_ok=FALSE，.sim 全是 -Inf
-  # 这种情况下：退一步用 score 最高的（避免整个 var 被丢掉）
-  has_score <- score_col %in% names(x)
+      match_head_ok = .has_cand & map2_lgl(.head, .cand_tokens, ~ !is.na(.x) && .x %in% .y),
+      # similarity：FFQ 原始描述 vs 候选 description 的 Jaccard
+      match_sim = ifelse(.has_cand, map2_dbl(.q_tokens, .cand_tokens, .jaccard), NA_real_),
+      .search = if (has_final) as.numeric(.data[[final_col]]) else NA_real_
+    ) %>%
+    group_by(.data[[var_col]]) %>%
+    mutate(
+      # 没有 final（比如旧缓存）时，用组内归一化的 API score
+      .search = if (all(is.na(.search)) && has_score) .rescale01(.data[[score_col]]) else coalesce(.search, 0),
+      match_score = ifelse(.has_cand, w_sim * match_sim + w_search * .search, NA_real_),
+      n_candidates = sum(.has_cand),
+      needs_review = !any(match_head_ok)
+    ) %>%
+    arrange(desc(match_head_ok), desc(match_score), .data[[rank_col]], .by_group = TRUE) %>%
+    slice(1) %>%
+    ungroup()
   
   x %>%
-    group_by(.data[[var_col]]) %>%
-    mutate(.all_bad = all(is.infinite(.sim) & .sim < 0)) %>%
-    {
-      if (has_score) {
-        arrange(., desc(ifelse(.all_bad, .data[[score_col]], .sim)),
-                desc(.data[[score_col]]), .by_group = TRUE)
-      } else {
-        arrange(., desc(ifelse(.all_bad, 0, .sim)), .by_group = TRUE)
-      }
-    } %>%
-    slice(1) %>%
-    ungroup() %>%
-    select(-.head, -.q_tokens, -.cand_tokens, -.head_ok, -.sim, -.all_bad)
+    select(-.has_cand, -.in_pool, -.head, -.q_tokens, -.cand_tokens, -.search)
 }

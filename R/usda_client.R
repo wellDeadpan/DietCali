@@ -254,7 +254,7 @@ usda_lookup_ffq_items <- function(item_map_df,
   
   # helper: force schema (so unnest never breaks)
   force_schema <- function(x) {
-    need <- c("rank","fdcId","description","dataType","score","foodCode","error_msg")
+    need <- c("rank","fdcId","description","dataType","score","foodCode","prefix_score","final","error_msg")
     for (nm in setdiff(need, names(x))) x[[nm]] <- NA
     x <- x[, need, drop = FALSE]
     tibble::as_tibble(x)
