@@ -1,3 +1,4 @@
 .Renviron
 .env
 .ipynb_checkpoints/
+datasets/
