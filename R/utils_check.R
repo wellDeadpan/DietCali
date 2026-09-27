@@ -5,9 +5,13 @@ correct_ids <- function(df, id_map) {
 
 # Validate and parse FFQ frequency conversion YAML
 # Returns a named numeric vector: code -> servings/day
+#
+# Response codes are taken from the YAML itself, so different inputs
+# (FFQ food items now, other instruments later) can use their own codes.
+# Pass `allow_values` only to additionally enforce an exact expected code set.
 
 util_check_freq_conversion <- function(yml_path,
-                                       allow_values = 1:9,
+                                       allow_values = NULL,
                                        key = "freq_conversion") {
   
   # ---- read YAML ----
@@ -29,12 +33,26 @@ util_check_freq_conversion <- function(yml_path,
     )
   }
   
+  if (nrow(map_tbl) == 0) {
+    stop("freq_conversion is empty.")
+  }
+  
   # ---- semantic cleaning ----
+  # "." means no fixed coefficient (e.g. "Pass through") -> NA
+  coef_chr <- dplyr::na_if(trimws(as.character(map_tbl$coefficient)), ".")
+  coef_num <- suppressWarnings(as.numeric(coef_chr))
+  bad_coef <- !is.na(coef_chr) & is.na(coef_num)
+  if (any(bad_coef)) {
+    stop(
+      "Non-numeric coefficient(s) in freq_conversion for code(s): ",
+      paste(map_tbl$value[bad_coef], collapse = ", ")
+    )
+  }
+  
   map_tbl <- map_tbl %>%
     dplyr::mutate(
       value = as.character(.data$value),
-      coefficient = dplyr::na_if(as.character(.data$coefficient), "."),
-      coefficient = as.numeric(.data$coefficient)
+      coefficient = coef_num
     )
   
   # ---- logical validation ----
@@ -42,23 +60,25 @@ util_check_freq_conversion <- function(yml_path,
     stop("Duplicate response codes detected in freq_conversion.")
   }
   
-  allowed_chr <- as.character(allow_values)
-  
-  extra_codes <- setdiff(map_tbl$value, allowed_chr)
-  missing_codes <- setdiff(allowed_chr, map_tbl$value)
-  
-  if (length(extra_codes) > 0) {
-    stop(
-      "Unexpected response code(s) in freq_conversion: ",
-      paste(extra_codes, collapse = ", ")
-    )
-  }
-  
-  if (length(missing_codes) > 0) {
-    stop(
-      "Missing response code(s) in freq_conversion: ",
-      paste(missing_codes, collapse = ", ")
-    )
+  if (!is.null(allow_values)) {
+    allowed_chr <- as.character(allow_values)
+    
+    extra_codes <- setdiff(map_tbl$value, allowed_chr)
+    missing_codes <- setdiff(allowed_chr, map_tbl$value)
+    
+    if (length(extra_codes) > 0) {
+      stop(
+        "Unexpected response code(s) in freq_conversion: ",
+        paste(extra_codes, collapse = ", ")
+      )
+    }
+    
+    if (length(missing_codes) > 0) {
+      stop(
+        "Missing response code(s) in freq_conversion: ",
+        paste(missing_codes, collapse = ", ")
+      )
+    }
   }
   
   if (any(map_tbl$coefficient < 0, na.rm = TRUE)) {
