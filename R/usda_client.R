@@ -122,8 +122,25 @@ prefix_score_one <- function(query, description, k = 4) {
 }
 
 
+# map short data type names to the names the FDC API expects
+.fdc_data_type_names <- c(
+  FNDDS = "Survey (FNDDS)",
+  Survey = "Survey (FNDDS)",
+  Foundation = "Foundation",
+  SR = "SR Legacy",
+  Branded = "Branded"
+)
+
 usda_search_candidates <- function(item, top_n = 10, data_types = NULL, k_prefix = 4) {
-  res <- usda_search_foods(query = item)
+  # restrict the search on the API side, so all returned results are of the
+  # requested type(s) instead of filtering a mixed top-50 locally
+  api_types <- NULL
+  if (!is.null(data_types)) {
+    api_types <- unique(ifelse(data_types %in% names(.fdc_data_type_names),
+                               .fdc_data_type_names[data_types], data_types))
+    api_types <- paste(api_types, collapse = ",")
+  }
+  res <- usda_search_foods(query = item, dataType = api_types)
   
   foods <- res$foods
   if (is.null(foods) || length(foods) == 0) {
@@ -156,7 +173,7 @@ usda_search_candidates <- function(item, top_n = 10, data_types = NULL, k_prefix
     error_msg = NA_character_
   )
   
-  # Optional: to filter FNDDs locally（data_types=c("FNDDS")）
+  # safety net: also filter locally in case the API returns other types
   if (!is.null(data_types)) {
     if ("FNDDS" %in% data_types) {
       df <- df[grepl("FNDDS", df$dataType, ignore.case = TRUE) |
@@ -223,8 +240,17 @@ usda_lookup_ffq_items <- function(item_map_df,
     }
   }
   
+  # cache key includes the search settings, so changing data_types / top_n
+  # doesn't silently reuse results from a different search
+  cache_key <- function(item) {
+    paste0(item, " || ", paste(sort(data_types), collapse = ","), " || top", top_n)
+  }
+  
   uniq_items <- unique(item_map_df$item)
-  to_query <- setdiff(uniq_items, names(cache))
+  to_query <- uniq_items[!cache_key(uniq_items) %in% names(cache)]
+  
+  # failed queries are kept here (not in the cache) so they are retried next run
+  failed <- list()
   
   # helper: force schema (so unnest never breaks)
   force_schema <- function(x) {
@@ -236,6 +262,9 @@ usda_lookup_ffq_items <- function(item_map_df,
   
   if (length(to_query) > 0) {
     if (verbose) message("🔎 Querying USDA FDC for ", length(to_query), " new items ...")
+    
+    # save successful results even if the loop is interrupted
+    if (!is.null(cache_path)) on.exit(saveRDS(cache, cache_path), add = TRUE)
     
     for (q in to_query) {
       Sys.sleep(sleep_sec)
@@ -258,23 +287,23 @@ usda_lookup_ffq_items <- function(item_map_df,
           msg <- conditionMessage(e)
           if (verbose) message("❌ ERROR: ", q, " | ", msg)
           
-          tmp <- tibble::tibble(
-            rank = integer(),
-            fdcId = integer(),
-            description = character(),
-            dataType = character(),
-            score = numeric(),
-            foodCode = character(),
-            error_msg = msg
-          )
+          # one row carrying the error message, so the failure shows up in the output
+          tmp <- tibble::tibble(error_msg = msg)
           force_schema(tmp)
         }
       )
       
-      cache[[q]] <- cand
+      if (all(is.na(cand$error_msg))) {
+        cache[[cache_key(q)]] <- cand
+      } else {
+        failed[[q]] <- cand
+      }
     }
     
-    if (!is.null(cache_path)) saveRDS(cache, cache_path)
+    if (length(failed) > 0) {
+      warning(length(failed), " item(s) failed and were not cached (will be retried next run): ",
+              paste(names(failed), collapse = "; "), call. = FALSE)
+    }
   } else {
     if (verbose) message("✅ All items found in cache; no API calls needed.")
   }
@@ -288,7 +317,7 @@ usda_lookup_ffq_items <- function(item_map_df,
   out <- item_map_df %>%
     dplyr::select(dplyr::all_of(keep_cols), dplyr::everything()) %>%  # 只是把关键列放前面
     dplyr::mutate(
-      candidates = purrr::map(.data$item, ~ cache[[.x]] %||% tibble::tibble())
+      candidates = purrr::map(.data$item, ~ failed[[.x]] %||% cache[[cache_key(.x)]] %||% tibble::tibble())
     ) %>%
     tidyr::unnest(candidates, keep_empty = TRUE)
   

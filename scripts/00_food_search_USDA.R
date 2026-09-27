@@ -23,7 +23,10 @@ ffq_item_py <- ffq_item_py[88:367,]
 # use：
 ffq_item_py_parsed <- parse_var_map(ffq_item_py)
 
-file.remove(cache_path)  
+# failed queries are no longer cached, so the cache can be kept between runs.
+# set to TRUE to force fresh USDA results (e.g. after changing the search logic)
+refresh_cache <- FALSE
+if (refresh_cache && file.exists(cache_path)) file.remove(cache_path)
 
 
 
