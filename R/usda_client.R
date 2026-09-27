@@ -44,12 +44,12 @@ usda_search_foods <- function(query,
   # endpoint
   url <- glue::glue("{cfg$base_url}/{cfg$version}/{cfg$endpoints$search}")
   
-  # URL encode query
-  query_enc <- utils::URLencode(query, reserved = TRUE)
+  # pass the raw query: httr URL-encodes query parameters itself,
+  # so encoding here would double-encode (e.g. "apple juice" -> "apple%2520juice")
   
   params <- list(
     api_key = cfg$api_key,
-    query = query_enc,
+    query = query,
     pageSize = if (is.null(pageSize)) cfg$default_pageSize else pageSize,
     pageNumber = pageNumber,
     requireAllWords = requireAllWords
