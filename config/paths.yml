@@ -6,7 +6,8 @@
 dataset_dir: "datasets/perls9"
 
 # Harvard FFQ export (perls9) raw data files
-ffq_raw_dir: "/restricted/projectnb/iloredcap/data/ILO_FFQ_data/FFQ Data Harvard 28JULY2025/perls9"
+# (on SCC: "/restricted/projectnb/iloredcap/data/ILO_FFQ_data/FFQ Data Harvard 28JULY2025/perls9")
+ffq_raw_dir: "I:/DietCali"
 
 # NECS replication data (DQ files)
 necs_data_dir: "../data"
