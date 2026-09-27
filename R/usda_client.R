@@ -7,6 +7,14 @@
 
 load_usda_config <- function() {
   cfg <- yaml::read_yaml("/restricted/projectnb/iloredcap/analysis/FFQ_analysis/Replication/NECS_replication/diet_index_ye/config/usda_config.yml")
+  
+  # read API key from environment (e.g. FDC_API_KEY in ~/.Renviron)
+  key_env <- cfg$api_key_env %||% "FDC_API_KEY"
+  cfg$api_key <- Sys.getenv(key_env)
+  if (!nzchar(cfg$api_key)) {
+    stop("USDA API key not found. Set environment variable `", key_env,
+         "` (e.g. add `", key_env, "=your_key` to ~/.Renviron and restart R).")
+  }
   return(cfg)
 }
 
@@ -371,7 +379,7 @@ get_food_details <- function(fdc_id) {
 }
 
 check_usda_updates <- function(days_back = 30) {
-  cfg <- yaml::read_yaml("/restricted/projectnb/iloredcap/analysis/FFQ_analysis/Replication/NECS_replication/diet_index_ye/config/usda_config.yml")
+  cfg <- load_usda_config()
   api_key <- cfg$api_key
   base_url <- cfg$base_url
   version <- cfg$version

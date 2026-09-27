@@ -1,4 +1,6 @@
-api_key: "aAZOA1h6tUEF4SUMUoSX9dbgAFd5HVXVXi2hZwSg"
+# API key is NOT stored here. Set it in the environment variable named below,
+# e.g. add a line `FDC_API_KEY=your_key` to ~/.Renviron and restart R.
+api_key_env: "FDC_API_KEY"
 base_url: "https://api.nal.usda.gov/fdc"
 version: "v1"
 endpoints:
