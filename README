@@ -3,7 +3,20 @@ Setup
 R packages:      install.packages("remotes"); remotes::install_deps(dependencies = TRUE)
 Python packages: pip install -r requirements.txt
 USDA API key:    add `FDC_API_KEY=your_key` to ~/.Renviron (see config/usda_config.yml)
-Data locations:  edit config/paths.yml
+Data locations:  edit config/paths.yml (raw data dir, active dataset)
+
+Layout
+------
+instruments/<name>/   instrument-specific (e.g. the FFQ form); changes or disappears with another input source
+                      questionnaire.csv, frequency_factors.yml
+datasets/<name>/      dataset-specific: data dictionaries, dataset.yml, var_map.csv (var -> q_id),
+                      food_items.csv = USDA batch-search input (instrument + dictionary + hand-written search terms)
+R/, config/           generic pipeline; reads only food_items.csv + dataset.yml
+
+food_items.csv is the interface: any input source that produces the same columns
+(var, form_label, portion, search_terms, exclude, ...) can use the pipeline unchanged.
+Rebuild it after changing the questionnaire or var_map (hand-edited columns are kept):
+    python3 scripts/build_food_items.py datasets/perls9
 
 Pipeline steps
 --------------

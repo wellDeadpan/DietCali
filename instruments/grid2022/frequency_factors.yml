@@ -1,5 +1,7 @@
 # FFQ frequency -> servings/day conversion
 # Source: Harvard FFQ Grid2022 frequency factors (ffwgt0-ffwgt9).
+# `coefficient` is the instrument's factor; `value` is the response code as it
+# appears in the data, i.e. dataset-specific coding (perls9: value = ffwgt + 1).
 # `value` = response code as it appears in the FFQ data;
 # `ffwgt` = the corresponding Grid2022 factor index (value - 1).
 freq_conversion:

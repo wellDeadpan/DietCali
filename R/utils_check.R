@@ -54,11 +54,11 @@ util_check_freq_conversion <- function(yml_path,
     )
   }
   
-  map_tbl <- map_tbl %>%
-    dplyr::mutate(
-      value = as.character(.data$value),
-      coefficient = coef_num
-    )
+  map_tbl <- dplyr::mutate(
+    map_tbl,
+    value = as.character(.data$value),
+    coefficient = coef_num
+  )
   
   # ---- logical validation ----
   if (anyDuplicated(map_tbl$value)) {

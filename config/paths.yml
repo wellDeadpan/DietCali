@@ -2,7 +2,10 @@
 # Relative paths are resolved against the project root (the folder containing `.here`);
 # absolute paths are used as-is. Edit these when moving to another machine.
 
-# Harvard FFQ export (perls9)
+# Active dataset (dataset-specific settings live in <dataset_dir>/dataset.yml)
+dataset_dir: "datasets/perls9"
+
+# Harvard FFQ export (perls9) raw data files
 ffq_raw_dir: "/restricted/projectnb/iloredcap/data/ILO_FFQ_data/FFQ Data Harvard 28JULY2025/perls9"
 
 # NECS replication data (DQ files)

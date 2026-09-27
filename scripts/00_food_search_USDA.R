@@ -6,16 +6,17 @@ source(here::here("R", "derive_servings.R"))
 
 paths <- load_paths()
 
-ffq_path <- file.path(paths$ffq_raw_dir, "perls9.scn1.csv")
+dataset <- load_dataset()
+ffq_path <- file.path(paths$ffq_raw_dir, dataset$data_files$scn1)
 cache_path <- here::here("cache", "usda_fdc_search_cache.rds")
 
 #cfg <- load_usda_config()
 
 ffq <- read_data(ffq_path)
 
-# FFQ food items -> USDA search terms (reviewed by hand, see
-# scripts/make_ffq_search_terms_draft.py). Only item_type == "frequency" rows.
-ffq_search <- read_ffq_search_terms()
+# food items -> USDA search terms (datasets/<name>/food_items.csv; search terms
+# are edited there by hand, see scripts/build_food_items.py)
+ffq_search <- read_food_items()
 
 ffq_search_parsed <- parse_var_map(ffq_search)
 

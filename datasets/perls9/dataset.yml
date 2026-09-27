@@ -1,0 +1,24 @@
+# perls9: Harvard FFQ export (Grid 2022 questionnaire), July 2025
+# Dataset-specific settings. Paths are relative to the project root.
+
+instrument_dir: instruments/grid2022
+
+# data dictionaries (var = label), one per data file
+dictionaries:
+  scn1: datasets/perls9/perls9.scn1.csv.label.doc
+  scn2: datasets/perls9/perls9.scn2.csv.label.doc
+
+# raw data file names inside `ffq_raw_dir` (config/paths.yml, machine-specific)
+data_files:
+  scn1: perls9.scn1.csv
+  scn2: perls9.scn2.csv
+
+# var -> questionnaire item (hand-maintained)
+var_map: datasets/perls9/var_map.csv
+
+# USDA batch-search input: rebuilt by scripts/build_food_items.py;
+# search_terms / exclude / review / note are edited by hand and kept on rebuild
+food_items: datasets/perls9/food_items.csv
+
+# frequency code -> servings/day; codes are this dataset's response coding
+frequency_factors: instruments/grid2022/frequency_factors.yml

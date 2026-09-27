@@ -71,32 +71,41 @@ read_ffq_item_map <- function(path) {
   tibble::tibble(var = mat[, "var"], item = mat[, "item"])
 }
 
-#' Read the reviewed FFQ search-term table (config/ffq_search_terms.csv)
+# Load the dataset config (datasets/<name>/dataset.yml); the active dataset
+# is set by `dataset_dir` in config/paths.yml. Paths are returned absolute.
+load_dataset <- function(dataset_dir = load_paths()$dataset_dir) {
+  cfg <- yaml::read_yaml(file.path(dataset_dir, "dataset.yml"))
+  for (key in c("instrument_dir", "var_map", "food_items", "frequency_factors")) {
+    if (!is.null(cfg[[key]])) cfg[[key]] <- here::here(cfg[[key]])
+  }
+  cfg$dictionaries <- lapply(cfg$dictionaries, here::here)
+  cfg
+}
+
+#' Read the USDA batch-search input (<dataset>/food_items.csv)
 #'
-#' Returns one row per (var, search term), ready for usda_lookup_ffq_items():
-#'   var, descriptions (original FFQ label), item (= search term, what USDA is
+#' This table is the interface between an input source (here: an FFQ +
+#' its data dictionary) and the generic pipeline. Returns one row per
+#' (var, search term), ready for usda_lookup_ffq_items():
+#'   var, descriptions (label as printed), item (= search term, what USDA is
 #'   queried with), entity (= search term, its last word is the head word),
-#'   exclude, food_group, portion, item_type
-#'
-#' @param item_types which item_type rows to keep (default: food-frequency items only)
-read_ffq_search_terms <- function(path = here::here("config", "ffq_search_terms.csv"),
-                                  item_types = "frequency") {
+#'   exclude, food_group, portion
+read_food_items <- function(path = load_dataset()$food_items) {
   tbl <- readr::read_csv(path, show_col_types = FALSE,
                          col_types = readr::cols(.default = readr::col_character()))
   
-  missing_terms <- tbl$var[tbl$item_type %in% item_types & (is.na(tbl$search_terms) | trimws(tbl$search_terms) == "")]
+  missing_terms <- tbl$var[is.na(tbl$search_terms) | trimws(tbl$search_terms) == ""]
   if (length(missing_terms) > 0) {
     stop("search_terms is empty for: ", paste(missing_terms, collapse = ", "))
   }
   
   tbl %>%
-    dplyr::filter(.data$item_type %in% item_types) %>%
-    dplyr::rename(descriptions = "item") %>%
+    dplyr::rename(descriptions = "form_label") %>%
     dplyr::mutate(search_term = strsplit(.data$search_terms, ";", fixed = TRUE)) %>%
     tidyr::unnest_longer("search_term") %>%
     dplyr::mutate(search_term = trimws(.data$search_term)) %>%
     dplyr::filter(.data$search_term != "") %>%
     dplyr::mutate(item = .data$search_term, entity = .data$search_term) %>%
     dplyr::select("var", "descriptions", "item", "entity", "exclude",
-                  "food_group", "portion", "item_type")
+                  "food_group", "portion")
 }

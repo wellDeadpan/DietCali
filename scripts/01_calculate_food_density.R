@@ -1,6 +1,6 @@
 # convert into daily servings
 load_ffq_config <- function() {
-  cfg <- yaml::read_yaml(here::here("config", "ffq_conversion.yml"))
+  cfg <- yaml::read_yaml(load_dataset()$frequency_factors)
   return(cfg)
 }
 
