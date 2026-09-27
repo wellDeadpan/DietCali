@@ -1,3 +1,12 @@
+Setup
+-----
+R packages:      install.packages("remotes"); remotes::install_deps(dependencies = TRUE)
+Python packages: pip install -r requirements.txt
+USDA API key:    add `FDC_API_KEY=your_key` to ~/.Renviron (see config/usda_config.yml)
+Data locations:  edit config/paths.yml
+
+Pipeline steps
+--------------
 1. read in data
 2. ID correction
 4. check var names and added var labels (pre=process)

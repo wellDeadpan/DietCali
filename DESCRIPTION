@@ -1,0 +1,26 @@
+Package: DietCali
+Title: FFQ to FNDDS Diet Calibration and Dietary Index Pipeline
+Version: 0.0.1
+Description: Maps FFQ items to USDA FNDDS foods, derives gram weights and
+    daily intakes, and calculates dietary indexes (HEI, MIND).
+    This file only declares R dependencies; install them with
+    remotes::install_deps(dependencies = TRUE).
+License: file LICENSE
+Encoding: UTF-8
+Imports:
+    dietaryindex,
+    dplyr,
+    glue,
+    here,
+    httr,
+    jsonlite,
+    purrr,
+    readr,
+    readxl,
+    stringr,
+    tibble,
+    tidyr,
+    writexl,
+    yaml
+Remotes:
+    jamesjiadazhan/dietaryindex
