@@ -1,7 +1,7 @@
 # This script checks for USDA updates and downloads new data.
 
-source("/restricted/projectnb/iloredcap/analysis/FFQ_analysis/Replication/NECS_replication/diet_index_ye/R/usda_client.R")
-source("/restricted/projectnb/iloredcap/analysis/FFQ_analysis/Replication/NECS_replication/diet_index_ye/R/usda_cache.R")
+source(here::here("R", "usda_client.R"))
+source(here::here("R", "usda_cache.R"))
 
 update_usda_data <- function(query = "donut", limit = 10) {
   message("🔍 Searching for: ", query)

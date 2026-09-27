@@ -1,4 +1,16 @@
-read_usda_config <- function(path_yaml = "/restricted/projectnb/iloredcap/analysis/FFQ_analysis/Replication/NECS_replication/diet_index_ye/config/nutrient_reference.yml") {
+# Paths are resolved relative to the project root (folder containing `.here`)
+# via here::here(), so scripts work regardless of the working directory.
+
+# Load external data locations from config/paths.yml.
+# Relative entries are resolved against the project root; absolute ones kept as-is.
+load_paths <- function(path_yaml = here::here("config", "paths.yml")) {
+  p <- yaml::read_yaml(path_yaml)
+  lapply(p, function(x) {
+    if (grepl("^(/|~|[A-Za-z]:)", x)) path.expand(x) else here::here(x)
+  })
+}
+
+read_usda_config <- function(path_yaml = here::here("config", "nutrient_reference.yml")) {
   yaml::read_yaml(path_yaml)
 }
 

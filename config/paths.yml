@@ -1,0 +1,9 @@
+# Data locations OUTSIDE this repo (raw data is not version-controlled).
+# Relative paths are resolved against the project root (the folder containing `.here`);
+# absolute paths are used as-is. Edit these when moving to another machine.
+
+# Harvard FFQ export (perls9)
+ffq_raw_dir: "/restricted/projectnb/iloredcap/data/ILO_FFQ_data/FFQ Data Harvard 28JULY2025/perls9"
+
+# NECS replication data (DQ files)
+necs_data_dir: "../data"

@@ -1,7 +1,7 @@
 #' Caching functions to store USDA API responses
 
 usda_cache_dir <- function() {
-  dir <- "/restricted/projectnb/iloredcap/analysis/FFQ_analysis/Replication/NECS_replication/diet_index_ye/data_raw/usda/cache"
+  dir <- here::here("data_raw", "usda", "cache")
   if (!dir.exists(dir)) dir.create(dir, recursive = TRUE)
   dir
 }

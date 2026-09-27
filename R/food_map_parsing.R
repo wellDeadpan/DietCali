@@ -120,7 +120,7 @@ parse_var_map <- function(var_map) {
 
 
 # Save result for USDA search / caching step
-#writexl::write_xlsx(var_map_parsed, "/restricted/projectnb/iloredcap/analysis/FFQ_analysis/Replication/NECS_replication/diet_index_ye/config/variable_mapping_parsed.xlsx")
+#writexl::write_xlsx(var_map_parsed, here::here("config", "variable_mapping_parsed.xlsx"))
 
 message("✅ Parsed mapping saved to config/variable_mapping_parsed.xlsx")
 

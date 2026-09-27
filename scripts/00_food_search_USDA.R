@@ -1,13 +1,15 @@
-source("/restricted/projectnb/iloredcap/analysis/FFQ_analysis/Replication/NECS_replication/diet_index_ye/R/utils_io.R")
-source("/restricted/projectnb/iloredcap/analysis/FFQ_analysis/Replication/NECS_replication/diet_index_ye/R/usda_client.R")
-source("/restricted/projectnb/iloredcap/analysis/FFQ_analysis/Replication/NECS_replication/diet_index_ye/R/food_map_parsing.R")
-source("/restricted/projectnb/iloredcap/analysis/FFQ_analysis/Replication/NECS_replication/diet_index_ye/R/derive_servings.R")
+source(here::here("R", "utils_io.R"))
+source(here::here("R", "usda_client.R"))
+source(here::here("R", "food_map_parsing.R"))
+source(here::here("R", "derive_servings.R"))
 
 
-ffq_path <- "/restricted/projectnb/iloredcap/data/ILO_FFQ_data/FFQ Data Harvard 28JULY2025/perls9/perls9.scn1.csv"
-ffq_item_path <- "/restricted/projectnb/iloredcap/data/ILO_FFQ_data/FFQ Data Harvard 28JULY2025/perls9/perls9.scn1.csv.label.doc"
-cache_path <- "/restricted/projectnb/iloredcap/analysis/FFQ_analysis/Replication/NECS_replication/diet_index_ye/cache/usda_fdc_search_cache.rds"
-ffq_python_path <- "/restricted/projectnb/iloredcap/analysis/FFQ_analysis/Replication/NECS_replication/diet_index_ye/cache/ffq_item_map_parsed.rds"
+paths <- load_paths()
+
+ffq_path <- file.path(paths$ffq_raw_dir, "perls9.scn1.csv")
+ffq_item_path <- file.path(paths$ffq_raw_dir, "perls9.scn1.csv.label.doc")
+cache_path <- here::here("cache", "usda_fdc_search_cache.rds")
+ffq_python_path <- here::here("cache", "ffq_item_map_parsed.rds")
 
 #cfg <- load_usda_config()
 

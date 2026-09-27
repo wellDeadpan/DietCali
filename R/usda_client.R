@@ -6,7 +6,7 @@
 `%||%` <- function(x, y) if (is.null(x)) y else x
 
 load_usda_config <- function() {
-  cfg <- yaml::read_yaml("/restricted/projectnb/iloredcap/analysis/FFQ_analysis/Replication/NECS_replication/diet_index_ye/config/usda_config.yml")
+  cfg <- yaml::read_yaml(here::here("config", "usda_config.yml"))
   
   # read API key from environment (e.g. FDC_API_KEY in ~/.Renviron)
   key_env <- cfg$api_key_env %||% "FDC_API_KEY"
