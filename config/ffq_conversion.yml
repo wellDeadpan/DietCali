@@ -42,4 +42,6 @@ freq_conversion:
   - value: 10
     ffwgt: 9
     label: "Passthru"
-    coefficient: 0
+    # Grid2022 factor is 0; set to NA until we confirm how pass-through
+    # responses should be handled (TODO: revisit)
+    coefficient: .
