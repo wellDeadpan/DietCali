@@ -15,7 +15,7 @@ cache_path <- here::here("cache", "usda_fdc_search_cache.rds")
 ffq <- read_data(ffq_path)
 
 # food items -> USDA search terms (datasets/<name>/food_items.csv; search terms
-# are edited there by hand, see scripts/build_food_items.py)
+# are edited there by hand, see python/build_food_items.py)
 ffq_search <- read_food_items()
 
 ffq_search_parsed <- parse_var_map(ffq_search)

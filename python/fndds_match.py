@@ -28,7 +28,7 @@ Output (in <dataset>/fndds_match/)
                    labels for training / evaluating a reranker later.
 
 Usage
-  python3 scripts/fndds_match.py [--dataset datasets/perls9] [--no-dense]
+  python3 python/fndds_match.py [--dataset datasets/perls9] [--no-dense]
          [--model sentence-transformers/all-MiniLM-L6-v2]
          [--rerank [--rerank-model cross-encoder/ms-marco-MiniLM-L-6-v2]]
 """

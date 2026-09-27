@@ -8,7 +8,7 @@ rapidfuzz
 scipy
 spacy  # imported in the notebook but not currently used
 
-# FNDDS matching (scripts/fndds_match.py)
+# FNDDS matching (python/fndds_match.py)
 rank-bm25
 faiss-cpu
 sentence-transformers

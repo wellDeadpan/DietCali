@@ -11,7 +11,7 @@ The hand-maintained columns (search_terms, exclude, review, note) are kept
 from the existing food_items.csv, matched by var. New food items get empty
 search terms and review = 'check'.
 
-Usage:  python3 scripts/build_food_items.py [datasets/perls9]
+Usage:  python3 python/build_food_items.py [datasets/perls9]
 """
 import sys
 from pathlib import Path
