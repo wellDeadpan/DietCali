@@ -4,3 +4,4 @@
 datasets/
 instruments/
 data_raw/fndds/
+__pycache__/
