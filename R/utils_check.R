@@ -21,7 +21,12 @@ util_check_freq_conversion <- function(yml_path,
     stop("YAML must contain a top-level key `", key, "`.")
   }
   
-  map_tbl <- tibble::as_tibble(y[[key]])
+  # YAML list of records -> one row per record; coefficient kept as character
+  # so "." (no fixed coefficient) and numbers can be validated together below
+  map_tbl <- dplyr::bind_rows(lapply(y[[key]], function(r) {
+    r$coefficient <- if (is.null(r$coefficient)) NA_character_ else as.character(r$coefficient)
+    tibble::as_tibble(r)
+  }))
   
   # ---- schema validation ----
   required_cols <- c("value", "coefficient")
