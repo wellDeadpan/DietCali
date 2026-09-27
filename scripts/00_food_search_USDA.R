@@ -9,19 +9,16 @@ paths <- load_paths()
 ffq_path <- file.path(paths$ffq_raw_dir, "perls9.scn1.csv")
 ffq_item_path <- file.path(paths$ffq_raw_dir, "perls9.scn1.csv.label.doc")
 cache_path <- here::here("cache", "usda_fdc_search_cache.rds")
-ffq_python_path <- here::here("cache", "ffq_item_map_parsed.rds")
 
 #cfg <- load_usda_config()
 
 ffq <- read_data(ffq_path)
-ffq_item <- read_ffq_item_map(ffq_item_path)
-ffq_item_py <- readRDS(ffq_python_path)
-ffq_item_py <- ffq_item_py %>% rename(descriptions = item, item = entity_modifiers)
 
-ffq_item_py <- ffq_item_py[88:367,]
+# FFQ food items -> USDA search terms (reviewed by hand, see
+# scripts/make_ffq_search_terms_draft.py). Only item_type == "frequency" rows.
+ffq_search <- read_ffq_search_terms()
 
-# use：
-ffq_item_py_parsed <- parse_var_map(ffq_item_py)
+ffq_search_parsed <- parse_var_map(ffq_search)
 
 # failed queries are no longer cached, so the cache can be kept between runs.
 # set to TRUE to force fresh USDA results (e.g. after changing the search logic)
@@ -31,7 +28,7 @@ if (refresh_cache && file.exists(cache_path)) file.remove(cache_path)
 
 
 cand_tbl <- usda_lookup_ffq_items(
-  item_map_df = ffq_item_py_parsed,
+  item_map_df = ffq_search_parsed,
   top_n = 10,
   data_types = c("FNDDS"),              
   cache_path = cache_path,
@@ -41,7 +38,10 @@ cand_tbl <- usda_lookup_ffq_items(
 
 
 
-rank1_best <- dedupe_keep_one_per_var(cand_tbl)
+# drop candidates matching the `exclude` words, then keep one per var
+rank1_best <- cand_tbl %>%
+  apply_exclusions() %>%
+  dedupe_keep_one_per_var()
 
 rank1_best_weighted <- add_gramweight_from_usda(rank1_best)
 

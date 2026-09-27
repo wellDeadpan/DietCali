@@ -99,7 +99,8 @@ parse_var_map <- function(var_map) {
   parsed <- var_map %>%
     mutate(
       # 如果是老格式（variable_label存在）就沿用；新格式可缺失
-      food_group = if ("variable_label" %in% names(var_map)) str_trim(str_extract(variable_label, "^[^-]+")) else NA_character_,
+      food_group = if ("variable_label" %in% names(var_map)) str_trim(str_extract(variable_label, "^[^-]+"))
+                   else if ("food_group" %in% names(var_map)) food_group else NA_character_,
       after_dash = if ("variable_label" %in% names(var_map)) str_trim(str_remove(variable_label, "^[^-]+-")) else NA_character_,
       
       # 老逻辑：从 variable_label 里抓括号做 portion_text
@@ -195,6 +196,28 @@ suppressPackageStartupMessages({
   if (length(a) == 0 && length(b) == 0) return(1)
   if (length(a) == 0 || length(b) == 0) return(0)
   length(intersect(a, b)) / length(union(a, b))
+}
+
+# =========================================================
+# 去掉 description 含排除词的候选（exclude 列，';' 分隔，不区分大小写）
+# 例：bacon 的 exclude = "turkey" -> 去掉 "Bacon, turkey"
+# =========================================================
+apply_exclusions <- function(df, exclude_col = "exclude", cand_desc_col = "description") {
+  if (!exclude_col %in% names(df)) return(df)
+  
+  hit <- purrr::map2_lgl(df[[exclude_col]], df[[cand_desc_col]], function(ex, desc) {
+    if (is.na(ex) || is.na(desc) || trimws(ex) == "") return(FALSE)
+    words <- trimws(strsplit(ex, ";", fixed = TRUE)[[1]])
+    words <- words[words != ""]
+    any(stringr::str_detect(tolower(desc), stringr::fixed(tolower(words))))
+  })
+  
+  # 清空被排除行的候选字段（而不是删行），这样全被排除的 var 仍会出现在 dedupe 结果里
+  cand_cols <- intersect(c("rank", "fdcId", "description", "dataType", "score",
+                           "foodCode", "prefix_score", "final"), names(df))
+  for (col in cand_cols) df[[col]][hit] <- NA
+  df$excluded <- hit
+  df
 }
 
 # =========================================================
