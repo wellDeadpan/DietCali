@@ -301,8 +301,8 @@ for lab, v, por, ex in [
     ("Olive oil added to food or bread (1 Tbs)", "olive.oil", "1 Tbs", ""),
     ("Low-fat or olive oil mayonnaise (1 Tbs)", "mayo.d", "1 Tbs", ""),
     ("Regular mayonnaise (1 Tbs)", "mayo", "1 Tbs", "")]:
-    note = "portion may be cut off at the column edge on this proof" if v == "energy.bar" else ""
-    food(4, S, lab, v, por, ex, "added to food" if v == "oth.bran" else "", note=note)
+    food(4, S, lab, v, por, ex, "added to food" if v == "oth.bran" else "",
+         note="no portion printed" if not por else "")
 food(4, S, "Salad dressing (1–2 Tbs): How often?", "o.v", "1–2 Tbs", group="Salad dressing (1–2 Tbs)")
 add(4, "5", S, "Salad dressing: Type(s)", "multi_choice", "Nonfat|Low-fat|Olive oil|Regular (e.g., Italian, Ranch)",
     "dress.nofat|dress.lofat|dress.olive|dress.other", group="Salad dressing (1–2 Tbs)", passthru_var="dress.pt",

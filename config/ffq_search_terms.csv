@@ -77,9 +77,9 @@ cream,"Cream (coffee,sour)",scn1,frequency,half and half cream; sour cream,fat f
 cof.wht,Non-dairy whitener,scn1,frequency,nondairy coffee creamer,fat free,Dairy Foods,Non-dairy coffee whitener (exclude fat free) (1 Tbs),1 Tbs,,
 yogurt.frozen,"Frozen yogurt,sorbet, Sherbet,low fat ice cream",scn1,frequency,frozen yogurt; sorbet; sherbet; light ice cream,,Dairy Foods,"Frozen yogurt, sherbet, or low-fat ice cream (1 cup)",1 cup,,
 ice.cr,Regular ice cream,scn1,frequency,ice cream,,Dairy Foods,Regular ice cream (1 cup),1 cup,,
-bu,Spreads: Butter or ghee,scn1,frequency,butter; ghee,,Dairy Foods,Spreads added to food or bread; exclude use in cooking: Pure butter or ghee,,check,no portion printed on the form
-margarine,Spreads: Margarine,scn1,frequency,margarine,,Dairy Foods,Spreads added to food or bread; exclude use in cooking: Margarine,,check,no portion printed on the form
-spread.bu,Spreads: Butter with added oil (spreadable butter),scn1,frequency,butter blend spread,,Dairy Foods,"Spreads added to food or bread; exclude use in cooking: Butter with added oil (e.g., Land O Lakes Butter with Canola Oil)",,check,no portion printed on the form
+bu,Spreads: Butter or ghee,scn1,frequency,butter; ghee,,Dairy Foods,Spreads added to food or bread; exclude use in cooking: Pure butter or ghee,,,no portion printed on the form
+margarine,Spreads: Margarine,scn1,frequency,margarine,,Dairy Foods,Spreads added to food or bread; exclude use in cooking: Margarine,,,no portion printed on the form
+spread.bu,Spreads: Butter with added oil (spreadable butter),scn1,frequency,butter blend spread,,Dairy Foods,"Spreads added to food or bread; exclude use in cooking: Butter with added oil (e.g., Land O Lakes Butter with Canola Oil)",,,no portion printed on the form
 yog.plain,"Yogurt, plain",scn1,frequency,plain yogurt,,Dairy Foods,Yogurt (4–6 oz.) Include drinkable: Plain,4–6 oz.,,
 yog.lt,"Yogurt, artificially sweetened",scn1,frequency,light yogurt,,Dairy Foods,"Yogurt (4–6 oz.) Include drinkable: Artificially sweetened (e.g., light peach)",4–6 oz.,check,artificially sweetened; check FNDDS wording
 yog,"Yogurt, sweetened",scn1,frequency,fruit yogurt,,Dairy Foods,"Yogurt (4–6 oz.) Include drinkable: Sweetened (e.g., strawberry, vanilla)",4–6 oz.,,
@@ -122,7 +122,7 @@ salsa,"Salsa, picante or taco sauce",scn1,frequency,salsa; taco sauce,,Vegetable
 st.beans,String beans,scn1,frequency,green beans,,Vegetables,String beans (1/2 cup),1/2 cup,,
 humus,"Hummus, garbanzo or chickpeas",scn1,frequency,hummus; chickpeas,,Vegetables,"Hummus (1/4 cup), garbanzo or chickpeas (1/2 cup)",hummus 1/4 cup; garbanzo/chickpeas 1/2 cup,,
 beans,Beans or lentils,scn1,frequency,beans; lentils,,Vegetables,"Beans or lentils, baked, dried (1/2 cup) or soup",1/2 cup or soup,,
-tofu,"Soy burger, tofu,miso or other soy protein",scn1,frequency,tofu; soy burger; miso,,Vegetables,"Soy burger, tofu, miso or other soy protein",,check,no portion printed on the form
+tofu,"Soy burger, tofu,miso or other soy protein",scn1,frequency,tofu; soy burger; miso,,Vegetables,"Soy burger, tofu, miso or other soy protein",,,no portion printed on the form
 plant.burg,Other Plant-based Burger,scn1,frequency,veggie burger,,Vegetables,"Other plant-based burger, e.g., Beyond Meat, Lightlife (1 patty)",1 patty,check,generic 'other plant-based burger'
 peas,Peas or lima beans or soup,scn1,frequency,green peas; lima beans; split pea soup,,Vegetables,"Peas or lima beans (1/2 cup fresh, frz., canned) or soup","1/2 cup fresh, frz., canned or soup",check,'or soup' in label - confirm which soup
 broc,Broccoli,scn1,frequency,broccoli,,Vegetables,Broccoli (1/2 cup),1/2 cup,,
@@ -149,13 +149,13 @@ eggs.omega,"Eggs, Omega-3 fortified, incl yolk",scn1,frequency,whole egg,,"Eggs,
 eggs,"Eggs, regular, incl yolk",scn1,frequency,whole egg,,"Eggs, Meat, etc.",Eggs (1): Regular eggs including yolk,1,,
 hotdog,Beef Hot dogs,scn1,frequency,beef hot dog,,"Eggs, Meat, etc.",Beef hot dogs (1),1,,
 chix.dog,"Chicken or turkey hot dogs, sausage or bacon",scn1,frequency,chicken hot dog; turkey hot dog; sausage; bacon,,"Eggs, Meat, etc.","Chicken or turkey hot dogs, sausage (1) or bacon (2 slices)",hot dog/sausage 1; bacon 2 slices,,
-chix.no.sand,Chicken/turkey sandwich/frozen dinner,scn1,frequency,chicken sandwich; turkey sandwich; chicken frozen dinner,,"Eggs, Meat, etc.",Chicken/turkey sandwich or frozen dinner,,check,no portion printed on the form
+chix.no.sand,Chicken/turkey sandwich/frozen dinner,scn1,frequency,chicken sandwich; turkey sandwich; chicken frozen dinner,,"Eggs, Meat, etc.",Chicken/turkey sandwich or frozen dinner,,,no portion printed on the form
 chix.sk,"Chicken or turkey, with skin",scn1,frequency,skin eaten chicken; skin eaten turkey,,"Eggs, Meat, etc.","Other chicken or turkey, with skin (3 oz.) – including ground",3 oz.,,
 chix.no,"Chicken or turkey, without skin",scn1,frequency,skin not eaten chicken; skin not eaten turkey,,"Eggs, Meat, etc.","Other chicken or turkey, without skin (3 oz.)",3 oz.,,
 bacon,Bacon (exclude turkey bacon),scn1,frequency,pork bacon,turkey,"Eggs, Meat, etc.",Bacon (exclude turkey bacon) (2 slices),2 slices,,
 blank3,filler,scn1,filler,,,,,,,
 mpt,"eggom18dats, etc. - Passthru",scn1,passthru,,,"Meat, Fish","Meat, Fish section passthru (P)",,,
-bologna,"Salami, bologna or other processed meat sandwiches",scn1,frequency,salami; bologna,,"Meat, Fish","Salami, bologna, or other processed meat sandwiches",,check,no portion printed on the form
+bologna,"Salami, bologna or other processed meat sandwiches",scn1,frequency,salami; bologna,,"Meat, Fish","Salami, bologna, or other processed meat sandwiches",,,no portion printed on the form
 proc.mts,Sausage or kielbasa (pork or beef),scn1,frequency,pork sausage; beef sausage; kielbasa,,"Meat, Fish",Sausage or kielbasa (pork or beef) etc. (2 oz. or 2 links),2 oz. or 2 links,,
 xtrlean.hamburg,"Hamburger, lean or extra lean",scn1,frequency,lean ground beef; extra lean ground beef,,"Meat, Fish",Hamburger (1 patty): Lean or extra lean,1 patty,,
 hamb,"Hamburger, regular",scn1,frequency,regular ground beef,,"Meat, Fish",Hamburger (1 patty): Regular,1 patty,,
@@ -164,7 +164,7 @@ pork,Pork as a main dish,scn1,frequency,pork chop; ham,,"Meat, Fish","Pork as a 
 beef,Beef or lamb as a main dish,scn1,frequency,beef steak; beef roast; lamb,,"Meat, Fish","Beef or lamb as a main dish, e.g., steak, roast (4–6 oz.)",4–6 oz.,,
 tuna,Canned tuna,scn1,frequency,canned tuna,,"Meat, Fish",Canned tuna fish (3–4 oz.),3–4 oz.,,
 fr.fish.kids,"Breaded fish cakes, pieces",scn1,frequency,fish sticks; fish cake,,"Meat, Fish","Breaded fish, pieces or sticks (1 serving, store bought)",1 serving,,
-shrimp.ckd,"Shrimp, crab, scallops, clams",scn1,frequency,shrimp; crab; scallops; clams,,"Meat, Fish","Shellfish, e.g., shrimp, crab, scallops, clams as main dish",,check,no portion printed on the form
+shrimp.ckd,"Shrimp, crab, scallops, clams",scn1,frequency,shrimp; crab; scallops; clams,,"Meat, Fish","Shellfish, e.g., shrimp, crab, scallops, clams as main dish",,,no portion printed on the form
 dk.fish,Dark meat fish,scn1,frequency,salmon; mackerel; sardines; swordfish; bluefish,,"Meat, Fish","Dark meat fish, e.g., tuna steak, mackerel, salmon, sardines, bluefish, swordfish (3–5 oz.)",3–5 oz.,,
 oth.fish,Other fish,scn1,frequency,cod; haddock; halibut,,"Meat, Fish","Other fish, e.g., cod, haddock, halibut (3–5 oz.)",3–5 oz.,,
 bpt,Breads: Passthru,scn1,passthru,,,"Breads, Cereals, Starches","Breads, Cereals, Starches section passthru (P)",,,
@@ -208,8 +208,8 @@ coff.drink,Dairy Coffee Drink,scn1,frequency,cappuccino; latte,,Beverages,"Other
 blank4,filler,scn1,filler,,,,,,,
 spt,Sweets: Passthru,scn1,passthru,,,"Sweets, Baked Goods, Miscellaneous","Sweets, Baked Goods, Miscellaneous section passthru (P)",,,
 choc,Milk chocolate,scn1,frequency,milk chocolate,,"Sweets, Baked Goods, Miscellaneous","Milk chocolate (bar or pack), e.g., Hershey's, M&M's",bar or pack,,
-choc.dark,Dark chocolate,scn1,frequency,dark chocolate,,"Sweets, Baked Goods, Miscellaneous","Dark chocolate, e.g., Hershey's Dark or Dove Dark",,check,no portion printed on the form
-candy.nuts,Candy bars,scn1,frequency,chocolate candy bar,,"Sweets, Baked Goods, Miscellaneous","Candy bars, e.g., Snickers, Milky Way, Reese's",,check,no portion printed on the form
+choc.dark,Dark chocolate,scn1,frequency,dark chocolate,,"Sweets, Baked Goods, Miscellaneous","Dark chocolate, e.g., Hershey's Dark or Dove Dark",,,no portion printed on the form
+candy.nuts,Candy bars,scn1,frequency,chocolate candy bar,,"Sweets, Baked Goods, Miscellaneous","Candy bars, e.g., Snickers, Milky Way, Reese's",,,no portion printed on the form
 candy,Candy without chocolate,scn1,frequency,hard candy; gummy candy,chocolate,"Sweets, Baked Goods, Miscellaneous",Candy without chocolate (1 oz.),1 oz.,,
 coox.brn,"Cookies or Brownies, ready-made",scn1,frequency,cookie; brownie,,"Sweets, Baked Goods, Miscellaneous",Cookies (1) or Brownies (1): Ready made or from mix or dough,1,,
 coox.brn.home,"Cookies or Brownies, home-baked",scn1,frequency,homemade cookie; homemade brownie,,"Sweets, Baked Goods, Miscellaneous","Cookies (1) or Brownies (1): Home-baked, from scratch",1,,
@@ -221,7 +221,7 @@ p.bu,Peanut butter or other nut butter,scn1,frequency,peanut butter; almond butt
 popc,"Popcorn, regular, fat free or light",scn1,frequency,popcorn,,"Sweets, Baked Goods, Miscellaneous","Popcorn, regular, fat free or light (2–3 cups)",2–3 cups,,
 s.roll.c,Sweetroll,scn1,frequency,sweet roll; danish,,"Sweets, Baked Goods, Miscellaneous","Sweet roll, coffee cake or other pastry (1)",1,,
 snack.bar,Snack bars,scn1,frequency,granola bar; snack bar,,"Sweets, Baked Goods, Miscellaneous","Snack bars, e.g., Kind, Kashi, granola (1)",1,,
-energy.bar,Energy bars,scn1,frequency,energy bar; protein bar,,"Sweets, Baked Goods, Miscellaneous","Energy bars or high protein bars, e.g., Clif, Quest, RXbar",,check,no portion printed on the form
+energy.bar,Energy bars,scn1,frequency,energy bar; protein bar,,"Sweets, Baked Goods, Miscellaneous","Energy bars or high protein bars, e.g., Clif, Quest, RXbar",,,no portion printed on the form
 diet.drk,"Diet nutrion Drinks (Slimfast, ...)",scn1,frequency,meal replacement shake,,"Sweets, Baked Goods, Miscellaneous","Diet nutrition drinks, e.g. Slimfast (1)",1,check,e.g. SlimFast; check FNDDS wording
 meal.rpl.drk,Ensure,scn1,frequency,nutritional shake,,"Sweets, Baked Goods, Miscellaneous","Ensure, Boost or other meal replacement drinks (1)",1,check,Ensure; check FNDDS wording
 pretzel,Pretzels,scn1,frequency,pretzels,,"Sweets, Baked Goods, Miscellaneous",Pretzels (1 small bag or serving),1 small bag or serving,,

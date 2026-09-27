@@ -281,10 +281,10 @@ def main(force: bool) -> None:
                 sys.exit(f"no search terms for frequency variable {r['var']!r}")
             spec = TERMS[r["var"]]
             terms, exclude, note = (spec, "", "") if isinstance(spec, str) else spec
-            if pd.isna(portion):
-                note = "; ".join(x for x in [note, "no portion printed on the form"] if x)
         elif item_type == "other":
             note = "unclassified - set item_type by hand"
+        # no portion printed on the form (confirmed against the PDF): portion stays blank, not a review item
+        info = "no portion printed on the form" if item_type == "frequency" and pd.isna(portion) else ""
         rows.append({
             "var": r["var"],
             "item": r["item"],
@@ -296,7 +296,7 @@ def main(force: bool) -> None:
             "form_label": form_label,
             "portion": portion,
             "review": "check" if note else "",
-            "note": note,
+            "note": "; ".join(x for x in [note, info] if x),
         })
 
     out = pd.DataFrame(rows)
