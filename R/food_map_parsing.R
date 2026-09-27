@@ -27,9 +27,10 @@ norm_unit <- function(u) {
   if (is.na(u) || u == "") return(NA_character_)
   u <- str_to_lower(str_squish(u))
   u <- word(u, 1)
+  u <- str_remove(u, "[.,;:]+$")   # "oz." / "Tbs." as printed on the form
   u <- str_replace(u, "^cp$", "cup")
   u <- str_replace(u, "^oz$", "ounce")
-  u <- str_replace(u, "^(tb|tbsp)$", "tablespoon")
+  u <- str_replace(u, "^(tb|tbs|tbsp)$", "tablespoon")
   u <- str_replace(u, "^(ts|tsp)$", "teaspoon")
   u <- str_replace(u, "^pat$", "pat")
   u <- str_replace(u, "^clove$", "clove")

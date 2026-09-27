@@ -1,33 +1,41 @@
 """
-Generate a DRAFT of config/ffq_search_terms.csv from the parsed FFQ item map.
+Generate a DRAFT of config/ffq_search_terms.csv.
+
+Inputs
+  data_raw/perls9.scn1.csv.label.doc, data_raw/perls9.scn2.csv.label.doc
+      data dictionaries: the variable names in the FFQ data
+  data_raw/ffq_grid2022_questions.csv
+      the printed questionnaire (question type, section, portion as printed)
 
 The draft is meant to be reviewed and edited by hand; the edited CSV (not this
 script) is the source of truth used by the R pipeline. The script refuses to
 overwrite an existing CSV unless run with --force.
 
 Columns
-  var, item          FFQ variable and its original label
-  item_type          frequency | type | passthru | supplement | amount | id | filler | other
-                     (only `frequency` rows are searched in USDA / converted to servings)
+  var, item          FFQ variable and its data-dictionary label
+  data_file          which data file holds the variable (scn1 / scn2)
+  item_type          frequency | passthru | type | supplement | amount | liver | behavior | diet | id | filler | other
+                     (only `frequency` rows are searched in USDA / converted with the Grid2022 factors)
   search_terms       ';'-separated USDA search phrases, core food noun LAST
                      (the last word is used as the head word when choosing candidates)
   exclude            ';'-separated words; candidates whose description contains one are dropped
-  food_group, portion, matched_food_item, match_score
-                     carried over from the portion-table fuzzy match (master_food_table.csv)
-  portion_fix        set when PORTION_OVERRIDE corrected a wrong/missing fuzzy match
+  food_group         questionnaire section
+  form_label         the question text as printed on the form
+  portion            the portion as printed on the form
   review             'check' = please look at this row; see `note`
   note               why the row needs a look
 """
-import re
 import sys
 from pathlib import Path
 
 import pandas as pd
-import pyreadr
 
 PROJECT_ROOT = next(p for p in [Path.cwd(), *Path.cwd().parents] if (p / ".here").exists())
-IN_RDS = PROJECT_ROOT / "cache" / "ffq_item_map_parsed.rds"
-MASTER_CSV = PROJECT_ROOT / "data_raw" / "master_food_table.csv"
+DICTS = {
+    "scn1": PROJECT_ROOT / "data_raw" / "perls9.scn1.csv.label.doc",
+    "scn2": PROJECT_ROOT / "data_raw" / "perls9.scn2.csv.label.doc",
+}
+GRID_CSV = PROJECT_ROOT / "data_raw" / "ffq_grid2022_questions.csv"
 OUT_CSV = PROJECT_ROOT / "config" / "ffq_search_terms.csv"
 
 # ---------------------------------------------------------------------------
@@ -47,7 +55,7 @@ TERMS = {
     "ice.cr": "ice cream",
     "bu": "butter; ghee",
     "margarine": "margarine",
-    "spread.bu": ("butter blend spread", "", "spreadable butter (butter + oil)"),
+    "spread.bu": "butter blend spread",   # butter with added oil
     "yog.plain": "plain yogurt",
     "yog.lt": ("light yogurt", "", "artificially sweetened; check FNDDS wording"),
     "yog": "fruit yogurt",
@@ -200,121 +208,101 @@ TERMS = {
     "artif.sweet": "sugar substitute",
 }
 
-# ---------------------------------------------------------------------------
-# portion-table rows (master_food_table.csv food_item) where the notebook's
-# fuzzy match was wrong or missing
-# ---------------------------------------------------------------------------
-PORTION_OVERRIDE = {
-    # wrong match -> wrong portion
-    "corn": "Corn",                                              # was potato chips
-    "coff": "Coffee with caffeine",                              # was sweet roll
-    # swapped pairs (same portion, fixed for correctness)
-    "yog.lt": "Yogurt - Artificially sweetened",
-    "yog": "Yogurt - Sweetened",
-    "tangerine": "Tangerines / clementines / mandarin oranges",
-    "orang": "Oranges",
-    "chix.sk": "Other chicken or turkey with skin (incl. ground)",
-    "chix.no": "Other chicken or turkey without skin",
-    "dietsoda.caf": "Low-calorie carbonated beverage with caffeine",
-    # no match
-    "spread.bu": "Butter with added oil (spread)",
-    "o.j.ca.d": "Orange juice (calcium or vitamin D fortified)",
-    "onions": "Onions as garnish or salad",
-    "onions1": "Onions cooked or rings",
-    "fr.fish.kids": "Breaded fish / fish sticks (store bought)",
-    "ckd.cer": "Other cooked breakfast cereal (including grits)",
-    "pasta.ww": "Whole grain pasta (e.g., spaghetti, macaroni)",
-    "quinoa": "Other whole grains (quinoa, barley, spelt, etc.)",
-    "snack.chip": "Potato chips or corn/tortilla chips",
-    "dietsoda.nocaf": "Other low-calorie carbonated beverage without caffeine",
-    "coke": "Carbonated beverage with caffeine & sugar",
-    "punch": "Other sugar-sweetened beverages (juice drinks, lemonade, sports drinks, sweetened tea)",
-    "s.roll.c": "Sweet roll / coffee cake / pastry",
-    "snack.bar": "Snack bars (Kind, Kashi, granola)",
-    "oth.bran": "Oat bran / wheat bran added to food",
-}
-
-# variables that are not food-frequency questions
-SUPPLEMENT_RANGE = ("multvit", "otherptb")      # contiguous block of supplement questions
-CEREAL_BRANDS = {"cer", "c.flk.K", "cheerio", "fr.miniwht", "natural.q",
-                 "hon.bun.oats", "spec.k", "rz.b.k", "sh.wht"}
+SUPPLEMENT_SECTIONS = {"Multivitamins", "Individual vitamins (not counting multivitamins)", "Other supplements"}
 
 
-def classify(var: str, item: str, in_supp_block: bool) -> str:
-    it = item.lower()
+def read_dict(path: Path) -> pd.DataFrame:
+    rows = []
+    for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+        if "=" in line and not line.strip().startswith("#"):
+            var, label = line.split("=", 1)
+            rows.append((var.strip(), " ".join(label.split())))
+    return pd.DataFrame(rows, columns=["var", "item"])
+
+
+def grid_by_var(grid: pd.DataFrame) -> dict:
+    """var -> (grid row, role) where role is 'var' or 'passthru'"""
+    out = {}
+    for _, r in grid.iterrows():
+        for col, role in (("var", "var"), ("passthru_var", "passthru")):
+            if pd.notna(r[col]):
+                for v in str(r[col]).split("|"):
+                    if v:
+                        out[v] = (r, role)
+    return out
+
+
+def classify(var: str, g) -> str:
     if var == "id":
         return "id"
-    if it.strip() == "filler":
-        return "filler"
-    if "passthru" in it or re.search(r"\bptb\b", it) or var == "cerpt":
+    if g is None:
+        return "filler" if var.startswith("blank") else "other"
+    r, role = g
+    if role == "passthru" or r["response_type"] == "passthru":
         return "passthru"
-    if in_supp_block:
+    if r["response_type"] == "frequency":
+        return "frequency"
+    if r["section"] in SUPPLEMENT_SECTIONS:
         return "supplement"
     if var == "sug":
         return "amount"
-    if var in TERMS:          # before the 'type' check: e.g. "Olives, any type" is a food
-        return "frequency"
-    if var in CEREAL_BRANDS or re.search(r"\btype\b", it):
-        return "type"
-    return "other"
+    if r["section"] == "Liver":
+        return "liver"            # food frequency on its own 5-level scale
+    if var in ("ffh", "ffa", "toast"):
+        return "behavior"
+    if r["section"] == "Diet":
+        return "diet"
+    return "type"
 
 
 def main(force: bool) -> None:
     if OUT_CSV.exists() and not force:
         sys.exit(f"{OUT_CSV} already exists (it may contain manual edits). Use --force to overwrite.")
 
-    d = pyreadr.read_r(str(IN_RDS))[None].reset_index(drop=True)
-    g = (d.groupby(["var", "item"], sort=False)
-           .agg(food_group=("food_group", "first"), portion=("portion", "first"),
-                matched_food_item=("matched_food_item", "first"), match_score=("match_score", "first"))
-           .reset_index())
+    d = pd.concat([read_dict(p).assign(data_file=k) for k, p in DICTS.items()])
+    d = (d.groupby(["var", "item"], sort=False)["data_file"].agg("|".join).reset_index())
 
-    master = pd.read_csv(MASTER_CSV, encoding="utf-8-sig").set_index("food_item")
-    bad = set(PORTION_OVERRIDE.values()) - set(master.index)
-    if bad:
-        sys.exit(f"PORTION_OVERRIDE refers to unknown master_food_table items: {sorted(bad)}")
-    for var, food_item in PORTION_OVERRIDE.items():
-        i = g.index[g["var"] == var][0]
-        old = g.at[i, "matched_food_item"]
-        g.at[i, "matched_food_item"] = food_item
-        g.at[i, "food_group"] = master.at[food_item, "food_group"]
-        g.at[i, "portion"] = master.at[food_item, "portion"]
-        g.at[i, "match_score"] = None
-        g.at[i, "portion_fix"] = "no match" if pd.isna(old) else f"was: {old}"
-
-    vars_ = g["var"].tolist()
-    lo, hi = vars_.index(SUPPLEMENT_RANGE[0]), vars_.index(SUPPLEMENT_RANGE[1])
+    grid = pd.read_csv(GRID_CSV, dtype=str)
+    gmap = grid_by_var(grid)
 
     rows = []
-    for i, r in g.iterrows():
-        item_type = classify(r["var"], r["item"], lo <= i <= hi)
+    for _, r in d.iterrows():
+        g = gmap.get(r["var"])
+        item_type = classify(r["var"], g)
         terms, exclude, note = "", "", ""
+        food_group = form_label = portion = None
+        if g is not None:
+            gr = g[0]
+            food_group = gr["section"]
+            form_label = gr["item_label"] if pd.isna(gr["group_label"]) else f"{gr['group_label']}: {gr['item_label']}"
+            portion = gr["portion_text"]
         if item_type == "frequency":
+            if r["var"] not in TERMS:
+                sys.exit(f"no search terms for frequency variable {r['var']!r}")
             spec = TERMS[r["var"]]
             terms, exclude, note = (spec, "", "") if isinstance(spec, str) else spec
-            if pd.isna(r["portion"]) or str(r["portion"]).strip().lower() in ("", "nan"):
-                note = "; ".join(x for x in [note, "no portion in master_food_table"] if x)
-        # portion info is only meaningful for frequency items (fuzzy match misfires otherwise)
-        keep_portion = item_type == "frequency"
+            if pd.isna(portion):
+                note = "; ".join(x for x in [note, "no portion printed on the form"] if x)
+        elif item_type == "other":
+            note = "unclassified - set item_type by hand"
         rows.append({
             "var": r["var"],
             "item": r["item"],
+            "data_file": r["data_file"],
             "item_type": item_type,
             "search_terms": terms,
             "exclude": exclude,
-            "food_group": r["food_group"] if keep_portion else None,
-            "portion": r["portion"] if keep_portion else None,
-            "matched_food_item": r["matched_food_item"] if keep_portion else None,
-            "match_score": r["match_score"] if keep_portion else None,
-            "portion_fix": r.get("portion_fix") if keep_portion and pd.notna(r.get("portion_fix")) else None,
-            "review": "check" if (note or item_type == "other") else "",
-            "note": note if item_type != "other" else "unclassified - set item_type by hand",
+            "food_group": food_group,
+            "form_label": form_label,
+            "portion": portion,
+            "review": "check" if note else "",
+            "note": note,
         })
 
     out = pd.DataFrame(rows)
-    unused = set(TERMS) - set(out["var"])
+    unused = set(TERMS) - set(out.loc[out["item_type"] == "frequency", "var"])
     if unused:
-        sys.exit(f"TERMS has vars not in the item map: {sorted(unused)}")
+        sys.exit(f"TERMS has vars that are not frequency items: {sorted(unused)}")
 
     out.to_csv(OUT_CSV, index=False, encoding="utf-8")
     print(f"wrote {OUT_CSV} ({len(out)} vars)")

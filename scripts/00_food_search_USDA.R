@@ -7,7 +7,6 @@ source(here::here("R", "derive_servings.R"))
 paths <- load_paths()
 
 ffq_path <- file.path(paths$ffq_raw_dir, "perls9.scn1.csv")
-ffq_item_path <- file.path(paths$ffq_raw_dir, "perls9.scn1.csv.label.doc")
 cache_path <- here::here("cache", "usda_fdc_search_cache.rds")
 
 #cfg <- load_usda_config()
