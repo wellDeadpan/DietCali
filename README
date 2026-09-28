@@ -23,8 +23,9 @@ Rebuild it after changing the questionnaire or var_map (hand-edited columns are 
 FNDDS matching
 --------------
 Sources: a local FNDDS copy (BM25 + FAISS), the USDA search API, or both (fused with RRF).
-1. local: download the FoodData Central "Survey (FNDDS)" CSV zip, unzip it under data_raw/fndds/
-   and set `fndds_dir` in config/paths.yml to that folder.
+1. local: python3 python/download_fndds.py --update-config
+          (downloads the newest FoodData Central "Survey (FNDDS)" CSV release into data_raw/fndds/
+           and sets `fndds_dir` in config/paths.yml; --release YYYY-MM-DD or --url for a specific one)
    api:   set FDC_API_KEY (e.g. in ~/.Renviron and your shell); responses are cached in cache/usda_api_search/.
 2. python3 python/fndds_match.py                       # local: BM25 + FAISS
    python3 python/fndds_match.py --source api          # USDA API only (no local FNDDS needed)

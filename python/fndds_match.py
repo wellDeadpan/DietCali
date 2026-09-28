@@ -329,7 +329,9 @@ def match(queries: pd.DataFrame, retrievers: list, k_retrieve=50, top_k=5, reran
                 row[f"{s}_rank"] = ranks[d].get(s)
                 row[f"{s}_score"] = round(scores[d][s], 3) if s in scores[d] else None
             cand_rows.append(row)
-    cand = pd.DataFrame(cand_rows)
+    cols = ["var", "search_term", "rank", "fdc_id", "food_code", "description", "wweia_category",
+            "rrf_score", "rerank_score", "head_ok"] + [f"{s}_{x}" for s in SOURCES for x in ("rank", "score")]
+    cand = pd.DataFrame(cand_rows, columns=cols)
     for s in SOURCES:
         cand[f"{s}_rank"] = cand[f"{s}_rank"].astype("Int64")
     return cand
