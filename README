@@ -22,18 +22,25 @@ Rebuild it after changing the questionnaire or var_map (hand-edited columns are 
 
 FNDDS matching
 --------------
-Sources: a local FNDDS copy (BM25 + FAISS), the USDA search API, or both (fused with RRF).
-1. local: python3 python/download_fndds.py --update-config
-          (downloads the newest FoodData Central "Survey (FNDDS)" CSV release into data_raw/fndds/
-           and sets `fndds_dir` in config/paths.yml; --release YYYY-MM-DD or --url for a specific one)
-   api:   set FDC_API_KEY (e.g. in ~/.Renviron and your shell); responses are cached in cache/usda_api_search/.
-2. python3 python/fndds_match.py                       # local: BM25 + FAISS
-   python3 python/fndds_match.py --source api          # USDA API only (no local FNDDS needed)
-   python3 python/fndds_match.py --source both         # local + API
-   add --rerank for cross-encoder reranking, --no-dense for BM25 only (local)
-3. Review datasets/<name>/fndds_match/matches.csv (one FNDDS food per search term);
-   put corrections in manual_fdc_id / review_note (kept on re-runs).
-   candidates.csv holds the top-5 candidates per search term.
+Code: python/dietcali/ (package) + command-line entry points in python/.
+  dietcali/retrieval   recall sources: bm25, dense (FAISS), api (USDA search)
+  dietcali/rerank      exclude / head-word rules, optional cross-encoder
+  dietcali/pipeline    Matcher (RRF fusion) and run outputs with a manifest of all component versions
+  dietcali/feedback    feedback event schema + JSONL log (expert review / user choices)
+  dietcali/eval        gold set from feedback, top-1 / recall@k / MRR
+Tests: python -m pytest tests
+
+1. FNDDS locally:  python python/download_fndds.py --update-config
+   (or use the USDA API only: set FDC_API_KEY and pass --source api)
+2. Match:          python python/fndds_match.py [--source local|api|both] [--no-dense] [--rerank]
+   -> datasets/<name>/fndds_match/matches.csv (review sheet), candidates.csv, manifest.json,
+      runs/<run_id>/ (history of every run)
+3. Review:         in matches.csv fill review_status = accept | correct | none,
+                   manual_fdc_id for `correct`, review_note (kept when re-running)
+4. Record:         python python/record_feedback.py --reviewer <name>
+   -> datasets/<name>/feedback/events.jsonl (append-only; re-recording is safe)
+5. Evaluate:       python python/evaluate.py [--run <run_id>] [--by-group]
+   -> top-1 accuracy, recall@k, MRR against the expert labels; writes runs/<run_id>/eval.json
 
 Pipeline steps
 --------------
