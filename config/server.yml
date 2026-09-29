@@ -1,0 +1,24 @@
+# Server layer: one instance, shared by all datasets / clients.
+# Data lives under `server_dir` (not version-controlled). Relative paths are
+# resolved against the project root.
+
+server_dir: server
+
+fndds:
+  download_page: "https://fdc.nal.usda.gov/download-datasets"
+  zip_url: "https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_survey_food_csv_{release}.zip"
+  fallback_release: "2024-10-31"      # used when the download page can't be read
+
+models:
+  # defaults registered on first use; the active models are kept in <server_dir>/models/registry.json
+  embedding: "sentence-transformers/all-MiniLM-L6-v2"
+  reranker: "cross-encoder/ms-marco-MiniLM-L-6-v2"
+
+matching:                             # defaults for match requests (a request may override them)
+  sources: [bm25, dense]              # any of bm25, dense, api
+  rerank: false
+  k_retrieve: 50
+  top_k: 5
+
+usda_api:
+  api_key_env: FDC_API_KEY            # only needed when the api source is used

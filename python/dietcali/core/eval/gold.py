@@ -1,6 +1,6 @@
 import pandas as pd
 
-from ..feedback.log import latest_by_query
+from ..feedback import latest_by_query
 
 
 def gold_set(events: list, dataset: str, label_sources=("expert",)) -> pd.DataFrame:

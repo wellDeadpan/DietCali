@@ -1,4 +1,4 @@
-"""Evaluation of a matching run against the gold set built from feedback."""
+"""Evaluation of matching results against the gold set built from feedback."""
 from .gold import gold_set
 from .metrics import evaluate
 

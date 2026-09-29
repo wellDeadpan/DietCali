@@ -1,30 +1,14 @@
 """Matcher: recall (several sources) -> RRF fusion -> rules -> optional rerank.
 
-Also writes a matching run: every run gets a run_id and its own folder with
-the candidates that were shown, the chosen matches and a manifest recording
-all component versions, so feedback can always be traced to what the
-system showed at the time.
-
-<match_dir>/
-  matches.csv              review sheet for the latest run (review columns kept across runs)
-  candidates.csv           latest run's candidates
-  manifest.json            latest run's manifest
-  runs/<run_id>/           candidates.csv, matches.csv, manifest.json (immutable history)
+Queries are rows with var, search_term, exclude (+ optional form_label,
+portion). The result is one row per candidate (CAND_COLS); best_matches()
+turns it into one row per query with review flags.
 """
-import hashlib
-import json
-import subprocess
-import time
-from pathlib import Path
-
 import pandas as pd
 
-from .config import PROJECT_ROOT
 from .rerank.rules import excluded, head_ok, parse_exclude
 
 SOURCES = ["bm25", "dense", "api"]
-REVIEW_COLS = ["review_status", "manual_fdc_id", "review_note"]   # filled in by the reviewer
-REVIEW_STATUSES = {"accept", "correct", "none"}
 CAND_COLS = ["run_id", "var", "search_term", "rank", "fdc_id", "food_code", "description", "wweia_category",
              "rrf_score", "rerank_score", "head_ok"] + [f"{s}_{x}" for s in SOURCES for x in ("rank", "score")]
 
@@ -39,8 +23,7 @@ def rrf(rank_lists, k_rrf=60) -> dict:
 
 
 class Matcher:
-    def __init__(self, retrievers: list, reranker=None, k_retrieve: int = 50, top_k: int = 5, k_rrf: int = 60,
-                 fndds_version: str = ""):
+    def __init__(self, retrievers: list, reranker=None, k_retrieve: int = 50, top_k: int = 5, k_rrf: int = 60):
         if not retrievers:
             raise ValueError("at least one retriever is needed")
         self.retrievers = retrievers
@@ -48,7 +31,6 @@ class Matcher:
         self.k_retrieve = k_retrieve
         self.top_k = top_k
         self.k_rrf = k_rrf
-        self.fndds_version = fndds_version
 
     @property
     def sources(self) -> list:
@@ -100,18 +82,11 @@ class Matcher:
             cand[f"{s}_rank"] = cand[f"{s}_rank"].astype("Int64")
         return cand
 
-    def manifest(self, run_id: str, dataset: str, food_items: Path) -> dict:
-        return {
-            "run_id": run_id,
-            "created": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
-            "dataset": dataset,
-            "food_items_sha1": hashlib.sha1(Path(food_items).read_bytes()).hexdigest()[:12],
-            "fndds_version": self.fndds_version,
-            "retrievers": {r.name: r.version for r in self.retrievers},
-            "reranker": {self.reranker.name: self.reranker.version} if self.reranker else None,
-            "params": {"k_retrieve": self.k_retrieve, "top_k": self.top_k, "k_rrf": self.k_rrf},
-            "code_version": git_commit(),
-        }
+    def components(self) -> dict:
+        """versions of everything that determines the result (for run manifests)"""
+        return {"retrievers": {r.name: r.version for r in self.retrievers},
+                "reranker": {self.reranker.name: self.reranker.version} if self.reranker else None,
+                "params": {"k_retrieve": self.k_retrieve, "top_k": self.top_k, "k_rrf": self.k_rrf}}
 
 
 def best_matches(queries: pd.DataFrame, cand: pd.DataFrame, sources: list) -> pd.DataFrame:
@@ -144,75 +119,3 @@ def best_matches(queries: pd.DataFrame, cand: pd.DataFrame, sources: list) -> pd
                         "n_candidates": 0, "needs_review": True, "review_reason": "no candidates"})
         out.append(row)
     return pd.DataFrame(out)
-
-
-def carry_over_review(matches: pd.DataFrame, previous: Path) -> pd.DataFrame:
-    """keep the reviewer's columns from the previous review sheet.
-    `accept` refers to the food that was shown, so it is kept only if the
-    chosen fdc_id is unchanged; corrections (manual_fdc_id) are always kept."""
-    for c in REVIEW_COLS:
-        matches[c] = ""
-    if not Path(previous).exists():
-        return matches
-    old = pd.read_csv(previous, dtype=str, keep_default_na=False)
-    if not set(REVIEW_COLS) <= set(old.columns):
-        return matches
-    old = old.set_index(["var", "search_term"])
-    for i, r in matches.iterrows():
-        key = (r["var"], r["search_term"])
-        if key not in old.index:
-            continue
-        o = old.loc[key]
-        matches.at[i, "manual_fdc_id"] = o["manual_fdc_id"]
-        matches.at[i, "review_note"] = o["review_note"]
-        status = o["review_status"]
-        if status == "accept" and str(o.get("fdc_id", "")) != str(r.get("fdc_id", "")):
-            matches.at[i, "review_note"] = "; ".join(x for x in [o["review_note"], "top match changed since review"] if x)
-            status = ""
-        matches.at[i, "review_status"] = status
-    return matches
-
-
-def new_run_id() -> str:
-    return time.strftime("%Y%m%d-%H%M%S")
-
-
-def git_commit() -> str:
-    try:
-        out = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=PROJECT_ROOT,
-                             capture_output=True, text=True, timeout=5)
-        dirty = subprocess.run(["git", "status", "--porcelain", "--untracked-files=no"], cwd=PROJECT_ROOT,
-                               capture_output=True, text=True, timeout=5).stdout.strip()
-        return out.stdout.strip() + ("+dirty" if dirty else "") if out.returncode == 0 else ""
-    except Exception:
-        return ""
-
-
-def write_run(match_dir: Path, run_id: str, cand: pd.DataFrame, matches: pd.DataFrame, manifest: dict) -> Path:
-    match_dir = Path(match_dir)
-    run_dir = match_dir / "runs" / run_id
-    run_dir.mkdir(parents=True, exist_ok=True)
-    matches = carry_over_review(matches, match_dir / "matches.csv")
-    for d in (run_dir, match_dir):
-        cand.to_csv(d / "candidates.csv", index=False)
-        (d / "manifest.json").write_text(json.dumps(manifest, indent=2))
-    matches.drop(columns=REVIEW_COLS).to_csv(run_dir / "matches.csv", index=False)
-    matches.to_csv(match_dir / "matches.csv", index=False)
-    return run_dir
-
-
-def load_run(match_dir: Path, run_id: str = "latest") -> dict:
-    """candidates / matches / manifest of a run ('latest' = the current review sheet's run)"""
-    match_dir = Path(match_dir)
-    if run_id == "latest":
-        run_id = json.loads((match_dir / "manifest.json").read_text())["run_id"]
-    run_dir = match_dir / "runs" / run_id
-    if not run_dir.exists():
-        raise FileNotFoundError(f"run {run_id} not found in {match_dir / 'runs'}")
-    return {
-        "run_id": run_id,
-        "dir": run_dir,
-        "candidates": pd.read_csv(run_dir / "candidates.csv", dtype=str, keep_default_na=False),
-        "matches": pd.read_csv(run_dir / "matches.csv", dtype=str, keep_default_na=False),
-        "manifest": json.loads((run_dir / "manifest.json").read_text()),
-    }

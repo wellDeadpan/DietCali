@@ -1,13 +1,14 @@
 """DietCali: match dietary-assessment food items to FNDDS foods.
 
-Subpackages
-  retrieval   recall sources: local BM25, local dense (FAISS), USDA search API
-  rerank      exclusion / head-word rules and the optional cross-encoder
-  feedback    feedback event schema and log (expert review, user choices)
-  eval        gold set from feedback + ranking metrics
-Modules
-  config      project paths, dataset config
-  text        tokenization shared by retrieval and rules
-  fndds       local FNDDS tables
-  pipeline    Matcher: composes the components, writes run outputs + manifest
+Layers
+  core     pure logic, no paths or config: retrieval, rerank, matcher,
+           feedback event schema, evaluation metrics
+  server   one instance: FNDDS reference releases (update check, registry),
+           offline indexes, model registry, feedback store, run records,
+           and MatchService, the interface clients call
+  client   one per study/dataset: reads its food items, calls the service,
+           writes results + review sheet, submits review decisions
+
+Clients never touch FNDDS files, indexes or models; they only talk to
+MatchService (in-process today, HTTP later).
 """

@@ -1,3 +1,11 @@
+"""Feedback event schema.
+
+Every human decision about a match is one event. Events are append-only; a
+later event for the same query supersedes an earlier one. Each event keeps
+what the system showed (candidates, run_id -> run manifest), so events serve
+as training data (positives + shown-but-not-chosen hard negatives) and as the
+gold set for evaluation. Storage is the server's job (server/feedback_store.py).
+"""
 import hashlib
 import json
 import time
@@ -61,3 +69,13 @@ class FeedbackEvent:
 def query_key(context: dict, query: str) -> tuple:
     """identity of a query across runs: dataset + variable + text"""
     return (context.get("dataset", ""), context.get("var", ""), query)
+
+
+def latest_by_query(events: list, label_sources=("expert",)) -> dict:
+    """query key -> most recent event (later decisions supersede earlier ones)"""
+    out = {}
+    for e in sorted(events, key=lambda e: e.timestamp):
+        if label_sources and e.label_source not in label_sources:
+            continue
+        out[e.key] = e
+    return out

@@ -8,3 +8,4 @@ __pycache__/
 cache/usda_api_search/
 cache/fndds_emb_*.npy
 .pytest_cache/
+server/

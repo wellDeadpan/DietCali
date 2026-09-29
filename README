@@ -20,27 +20,36 @@ food_items.csv is the interface: any input source that produces the same columns
 Rebuild it after changing the questionnaire or var_map (hand-edited columns are kept):
     python3 python/build_food_items.py datasets/perls9
 
-FNDDS matching
---------------
-Code: python/dietcali/ (package) + command-line entry points in python/.
-  dietcali/retrieval   recall sources: bm25, dense (FAISS), api (USDA search)
-  dietcali/rerank      exclude / head-word rules, optional cross-encoder
-  dietcali/pipeline    Matcher (RRF fusion) and run outputs with a manifest of all component versions
-  dietcali/feedback    feedback event schema + JSONL log (expert review / user choices)
-  dietcali/eval        gold set from feedback, top-1 / recall@k / MRR
+FNDDS matching: layers
+----------------------
+client (per dataset)   datasets/<name>/: food_items.csv -> fndds_match/ (results, review sheet)
+                       knows nothing about FNDDS files, indexes or models
+server (one instance)  config/server.yml + server/ (not in git):
+                         reference/fndds/<release>/ + registry.json   FNDDS releases, active release
+                         indexes/<release>/<model>/                   offline FAISS index
+                         models/registry.json                         embedding / reranker models
+                         feedback/events.jsonl                        feedback from all datasets
+                         runs/<run_id>/                               manifest + candidates of every request
+interface              dietcali.server.MatchService (in-process now; maps to HTTP endpoints later)
+
+Code: python/dietcali/{core, server, client}; command-line entry points in python/.
 Tests: python -m pytest tests
 
-1. FNDDS locally:  python python/download_fndds.py --update-config
-   (or use the USDA API only: set FDC_API_KEY and pass --source api)
-2. Match:          python python/fndds_match.py [--source local|api|both] [--no-dense] [--rerank]
-   -> datasets/<name>/fndds_match/matches.csv (review sheet), candidates.csv, manifest.json,
-      runs/<run_id>/ (history of every run)
-3. Review:         in matches.csv fill review_status = accept | correct | none,
-                   manual_fdc_id for `correct`, review_note (kept when re-running)
-4. Record:         python python/record_feedback.py --reviewer <name>
-   -> datasets/<name>/feedback/events.jsonl (append-only; re-recording is safe)
-5. Evaluate:       python python/evaluate.py [--run <run_id>] [--by-group]
-   -> top-1 accuracy, recall@k, MRR against the expert labels; writes runs/<run_id>/eval.json
+Server jobs
+  python python/server_update_fndds.py                  check for a new FNDDS release, download + register it
+                                                        (first release is activated; later ones are not)
+         ... --import-dir data_raw/fndds/<folder> --name 2024-10-31   use an existing download
+         ... --status | --check | --activate <release>
+  python python/server_build_index.py [--release R] [--model M]      build the FAISS index
+  python python/server_evaluate.py --run <run_id>                    score a run against expert feedback
+  python python/server_evaluate.py --dataset perls9 --release R [--model M] [--rerank]
+                                                        score a new release / model before activating it
+
+Client (per dataset)
+  1. python python/fndds_match.py [--sources bm25 dense api] [--rerank]
+     -> datasets/<name>/fndds_match/matches.csv (review sheet), runs/<run_id>/
+  2. review matches.csv: review_status = accept | correct | none, manual_fdc_id for `correct`, review_note
+  3. python python/record_feedback.py --reviewer <name>      (sends the decisions to the server)
 
 Pipeline steps
 --------------
