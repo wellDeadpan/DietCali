@@ -1,11 +1,11 @@
 .Renviron
 .env
 .ipynb_checkpoints/
-datasets/
-instruments/
+/datasets/
+/instruments/
 data_raw/fndds/
 __pycache__/
 cache/usda_api_search/
 cache/fndds_emb_*.npy
 .pytest_cache/
-server/
+/server/
